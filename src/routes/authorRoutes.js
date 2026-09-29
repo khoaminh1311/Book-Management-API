@@ -1,25 +1,16 @@
 import express from 'express';
+import {
+  getAuthors,
+  createAuthor,
+  updateAuthor,
+  deleteAuthor
+} from '../controllers/authorController.js';
 
 const router = express.Router();
 
-// GET all authors
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'GET all authors (temporary)' });
-});
-
-// POST create author
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'POST create author (temporary)' });
-});
-
-// PUT update author
-router.put('/:id', (req, res) => {
-  res.status(200).json({ message: `PUT update author ${req.params.id} (temporary)` });
-});
-
-// DELETE author
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: `DELETE author ${req.params.id} (temporary)` });
-});
+router.get('/', getAuthors);
+router.post('/', createAuthor);
+router.put('/:id', updateAuthor);
+router.delete('/:id', deleteAuthor);
 
 export default router;
