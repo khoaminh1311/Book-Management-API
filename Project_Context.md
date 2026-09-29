@@ -633,7 +633,7 @@ Giai đoạn tiếp theo
 
 ```
 
-Agent không được triển khai các giai đoạn tương lai trừ khi có hướng dẫn rõ ràng.
+Agent không được triển khai các giai đoạn tương lai trừ khi có hướng dẫn rõ ràng. Agent không được tự triển khai git workflow, chỉ hướng dẫn cho người dùng các lệnh để git
 
 ---
 

@@ -1,9 +1,15 @@
 import express from 'express';
+import authorRoutes from './routes/authorRoutes.js';
+import bookRoutes from './routes/bookRoutes.js';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Routes
+app.use('/authors', authorRoutes);
+app.use('/books', bookRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {
