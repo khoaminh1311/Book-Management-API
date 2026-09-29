@@ -2,13 +2,22 @@ import Author from '../models/authorModel.js';
 import Book from '../models/bookModel.js';
 
 // GET /authors
-export const getAuthors = async (req, res) => {
+export const getAuthors = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page, 10);
-    const limit = parseInt(req.query.limit, 10);
+    const pageStr = req.query.page;
+    const limitStr = req.query.limit;
+
+    if (pageStr && (isNaN(pageStr) || parseInt(pageStr, 10) < 1)) {
+      res.status(400);
+      return next(new Error('Page must be a positive integer'));
+    }
+    if (limitStr && (isNaN(limitStr) || parseInt(limitStr, 10) < 1 || parseInt(limitStr, 10) > 100)) {
+      res.status(400);
+      return next(new Error('Limit must be a positive integer between 1 and 100'));
+    }
     
-    const validPage = (page && page > 0) ? page : 1;
-    const validLimit = (limit && limit > 0) ? limit : 10;
+    const validPage = pageStr ? parseInt(pageStr, 10) : 1;
+    const validLimit = limitStr ? parseInt(limitStr, 10) : 10;
     const startIndex = (validPage - 1) * validLimit;
 
     const total = await Author.countDocuments();
@@ -25,75 +34,59 @@ export const getAuthors = async (req, res) => {
       data: authors
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // POST /authors
-export const createAuthor = async (req, res) => {
+export const createAuthor = async (req, res, next) => {
   try {
     const author = await Author.create(req.body);
     res.status(201).json({ success: true, data: author });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: 'Validation Error', errors: messages });
-    }
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // PUT /authors/:id
-export const updateAuthor = async (req, res) => {
+export const updateAuthor = async (req, res, next) => {
   try {
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
-    }
-
     const author = await Author.findByIdAndUpdate(req.params.id, req.body, {
       returnDocument: 'after',
       runValidators: true
     });
 
     if (!author) {
-      return res.status(404).json({ success: false, message: 'Author not found' });
+      res.status(404);
+      return next(new Error('Author not found'));
     }
 
     res.status(200).json({ success: true, data: author });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: 'Validation Error', errors: messages });
-    }
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // DELETE /authors/:id
-export const deleteAuthor = async (req, res) => {
+export const deleteAuthor = async (req, res, next) => {
   try {
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
-    }
-
     const author = await Author.findById(req.params.id);
     if (!author) {
-      return res.status(404).json({ success: false, message: 'Author not found' });
+      res.status(404);
+      return next(new Error('Author not found'));
     }
 
     // Check if author is referenced by any books
     const booksCount = await Book.countDocuments({ author: req.params.id });
     if (booksCount > 0) {
-      return res.status(409).json({ 
-        success: false, 
-        message: 'Conflict: Cannot delete author because they are referenced by one or more books' 
-      });
+      res.status(409);
+      return next(new Error('Cannot delete author because they are referenced by one or more books'));
     }
 
     await Author.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ success: true, data: {} });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
