@@ -18,7 +18,7 @@ export const getBook = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid Book ID format' });
     }
 
-    const book = await Book.findById(req.params.id);
+    const book = await Book.findById(req.params.id).populate('author');
     if (!book) {
       return res.status(404).json({ success: false, message: 'Book not found' });
     }
@@ -32,7 +32,10 @@ export const getBook = async (req, res) => {
 // POST /books
 export const createBook = async (req, res) => {
   try {
-    if (req.body.author && req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
+    if (req.body.author) {
+      if (!req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
+      }
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
         return res.status(404).json({ success: false, message: 'Author not found' });
@@ -57,7 +60,10 @@ export const updateBook = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid Book ID format' });
     }
 
-    if (req.body.author && req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
+    if (req.body.author) {
+      if (!req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
+      }
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
         return res.status(404).json({ success: false, message: 'Author not found' });
