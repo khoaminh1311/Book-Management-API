@@ -4,8 +4,36 @@ import Author from '../models/authorModel.js';
 // GET /books
 export const getBooks = async (req, res) => {
   try {
-    const books = await Book.find();
-    res.status(200).json({ success: true, count: books.length, data: books });
+    const page = parseInt(req.query.page, 10);
+    const limit = parseInt(req.query.limit, 10);
+    
+    const validPage = (page && page > 0) ? page : 1;
+    const validLimit = (limit && limit > 0) ? limit : 10;
+    const startIndex = (validPage - 1) * validLimit;
+
+    const query = {};
+
+    if (req.query.genre) {
+      query.genre = { $regex: new RegExp('^' + req.query.genre + '$', 'i') };
+    }
+
+    if (req.query.search) {
+      query.title = { $regex: req.query.search, $options: 'i' };
+    }
+
+    const total = await Book.countDocuments(query);
+    const books = await Book.find(query).skip(startIndex).limit(validLimit);
+
+    res.status(200).json({ 
+      success: true, 
+      count: books.length,
+      pagination: {
+        total,
+        page: validPage,
+        pages: Math.ceil(total / validLimit)
+      },
+      data: books 
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error', error: error.message });
   }
