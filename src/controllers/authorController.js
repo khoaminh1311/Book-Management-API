@@ -1,4 +1,5 @@
 import Author from '../models/authorModel.js';
+import Book from '../models/bookModel.js';
 
 // GET /authors
 export const getAuthors = async (req, res) => {
@@ -75,6 +76,15 @@ export const deleteAuthor = async (req, res) => {
     const author = await Author.findById(req.params.id);
     if (!author) {
       return res.status(404).json({ success: false, message: 'Author not found' });
+    }
+
+    // Check if author is referenced by any books
+    const booksCount = await Book.countDocuments({ author: req.params.id });
+    if (booksCount > 0) {
+      return res.status(409).json({ 
+        success: false, 
+        message: 'Conflict: Cannot delete author because they are referenced by one or more books' 
+      });
     }
 
     await Author.findByIdAndDelete(req.params.id);
