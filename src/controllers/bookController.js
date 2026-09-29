@@ -2,13 +2,22 @@ import Book from '../models/bookModel.js';
 import Author from '../models/authorModel.js';
 
 // GET /books
-export const getBooks = async (req, res) => {
+export const getBooks = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page, 10);
-    const limit = parseInt(req.query.limit, 10);
+    const pageStr = req.query.page;
+    const limitStr = req.query.limit;
+
+    if (pageStr && (isNaN(pageStr) || parseInt(pageStr, 10) < 1)) {
+      res.status(400);
+      return next(new Error('Page must be a positive integer'));
+    }
+    if (limitStr && (isNaN(limitStr) || parseInt(limitStr, 10) < 1 || parseInt(limitStr, 10) > 100)) {
+      res.status(400);
+      return next(new Error('Limit must be a positive integer between 1 and 100'));
+    }
     
-    const validPage = (page && page > 0) ? page : 1;
-    const validLimit = (limit && limit > 0) ? limit : 10;
+    const validPage = pageStr ? parseInt(pageStr, 10) : 1;
+    const validLimit = limitStr ? parseInt(limitStr, 10) : 10;
     const startIndex = (validPage - 1) * validLimit;
 
     const query = {};
@@ -35,66 +44,51 @@ export const getBooks = async (req, res) => {
       data: books 
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // GET /books/:id
-export const getBook = async (req, res) => {
+export const getBook = async (req, res, next) => {
   try {
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: 'Invalid Book ID format' });
-    }
-
     const book = await Book.findById(req.params.id).populate('author');
     if (!book) {
-      return res.status(404).json({ success: false, message: 'Book not found' });
+      res.status(404);
+      return next(new Error('Book not found'));
     }
 
     res.status(200).json({ success: true, data: book });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // POST /books
-export const createBook = async (req, res) => {
+export const createBook = async (req, res, next) => {
   try {
     if (req.body.author) {
-      if (!req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
-        return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
-      }
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
-        return res.status(404).json({ success: false, message: 'Author not found' });
+        res.status(404);
+        return next(new Error('Author not found'));
       }
     }
 
     const book = await Book.create(req.body);
     res.status(201).json({ success: true, data: book });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: 'Validation Error', errors: messages });
-    }
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // PUT /books/:id
-export const updateBook = async (req, res) => {
+export const updateBook = async (req, res, next) => {
   try {
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: 'Invalid Book ID format' });
-    }
-
     if (req.body.author) {
-      if (!req.body.author.match(/^[0-9a-fA-F]{24}$/)) {
-        return res.status(400).json({ success: false, message: 'Invalid Author ID format' });
-      }
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
-        return res.status(404).json({ success: false, message: 'Author not found' });
+        res.status(404);
+        return next(new Error('Author not found'));
       }
     }
 
@@ -104,35 +98,29 @@ export const updateBook = async (req, res) => {
     });
 
     if (!book) {
-      return res.status(404).json({ success: false, message: 'Book not found' });
+      res.status(404);
+      return next(new Error('Book not found'));
     }
 
     res.status(200).json({ success: true, data: book });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map(val => val.message);
-      return res.status(400).json({ success: false, message: 'Validation Error', errors: messages });
-    }
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
 
 // DELETE /books/:id
-export const deleteBook = async (req, res) => {
+export const deleteBook = async (req, res, next) => {
   try {
-    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: 'Invalid Book ID format' });
-    }
-
     const book = await Book.findById(req.params.id);
     if (!book) {
-      return res.status(404).json({ success: false, message: 'Book not found' });
+      res.status(404);
+      return next(new Error('Book not found'));
     }
 
     await Book.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ success: true, data: {} });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    next(error);
   }
 };
