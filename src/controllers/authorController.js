@@ -4,20 +4,23 @@ import Book from '../models/bookModel.js';
 // GET /authors
 export const getAuthors = async (req, res) => {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const startIndex = (page - 1) * limit;
+    const page = parseInt(req.query.page, 10);
+    const limit = parseInt(req.query.limit, 10);
+    
+    const validPage = (page && page > 0) ? page : 1;
+    const validLimit = (limit && limit > 0) ? limit : 10;
+    const startIndex = (validPage - 1) * validLimit;
 
     const total = await Author.countDocuments();
-    const authors = await Author.find().skip(startIndex).limit(limit);
+    const authors = await Author.find().skip(startIndex).limit(validLimit);
 
     res.status(200).json({
       success: true,
       count: authors.length,
       pagination: {
         total,
-        page,
-        pages: Math.ceil(total / limit)
+        page: validPage,
+        pages: Math.ceil(total / validLimit)
       },
       data: authors
     });

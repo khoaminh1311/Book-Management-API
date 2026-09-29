@@ -10,6 +10,10 @@ const bookSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  genre: {
+    type: String,
+    trim: true
+  },
   price: {
     type: Number,
     min: [0, 'Price cannot be negative']
