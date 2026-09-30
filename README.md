@@ -5,7 +5,7 @@ Developed with a focus on strict validation, error handling, and robust querying
 
 ## Live API URL (Production)
 
-🚀 **Production API:** `https://book-management-api-cuds.onrender.com` *(Replace `xxx` with your actual Render URL after deployment)*
+🚀 **Production API:** `https://book-management-api-cuds.onrender.com`
 
 ## Features
 
