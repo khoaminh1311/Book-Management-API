@@ -4,34 +4,62 @@ import Book from '../models/bookModel.js';
 // GET /authors
 export const getAuthors = async (req, res, next) => {
   try {
-    const pageStr = req.query.page;
-    const limitStr = req.query.limit;
+    let validPage = 1;
+    let validLimit = 10;
 
-    if (pageStr && (isNaN(pageStr) || parseInt(pageStr, 10) < 1)) {
-      res.status(400);
-      return next(new Error('Page must be a positive integer'));
+    if (req.query.page !== undefined && req.query.page !== '') {
+      const pageNum = Number(req.query.page);
+      if (!Number.isInteger(pageNum) || pageNum < 1) {
+        res.status(400);
+        return next(new Error('Page must be a positive integer'));
+      }
+      validPage = pageNum;
     }
-    if (limitStr && (isNaN(limitStr) || parseInt(limitStr, 10) < 1 || parseInt(limitStr, 10) > 100)) {
-      res.status(400);
-      return next(new Error('Limit must be a positive integer between 1 and 100'));
+
+    if (req.query.limit !== undefined && req.query.limit !== '') {
+      const limitNum = Number(req.query.limit);
+      if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
+        res.status(400);
+        return next(new Error('Limit must be a positive integer between 1 and 100'));
+      }
+      validLimit = limitNum;
     }
-    
-    const validPage = pageStr ? parseInt(pageStr, 10) : 1;
-    const validLimit = limitStr ? parseInt(limitStr, 10) : 10;
+
     const startIndex = (validPage - 1) * validLimit;
 
     const total = await Author.countDocuments();
     const authors = await Author.find().skip(startIndex).limit(validLimit);
 
     res.status(200).json({
-      success: true,
-      count: authors.length,
+      data: authors,
       pagination: {
-        total,
         page: validPage,
-        pages: Math.ceil(total / validLimit)
-      },
-      data: authors
+        limit: validLimit,
+        total,
+        totalPages: Math.ceil(total / validLimit)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /authors/:id
+export const getAuthor = async (req, res, next) => {
+  try {
+    const author = await Author.findById(req.params.id);
+    if (!author) {
+      res.status(404);
+      return next(new Error('Author not found'));
+    }
+
+    const books = await Book.find({ author: req.params.id });
+
+    res.status(200).json({
+      data: {
+        ...author._doc,
+        books
+      }
     });
   } catch (error) {
     next(error);
@@ -41,8 +69,12 @@ export const getAuthors = async (req, res, next) => {
 // POST /authors
 export const createAuthor = async (req, res, next) => {
   try {
+    if (req.body.name !== undefined && typeof req.body.name !== 'string') {
+      res.status(400);
+      return next(new Error('Validation failed: name must be a string'));
+    }
     const author = await Author.create(req.body);
-    res.status(201).json({ success: true, data: author });
+    res.status(201).json({ data: author });
   } catch (error) {
     next(error);
   }
@@ -51,6 +83,10 @@ export const createAuthor = async (req, res, next) => {
 // PUT /authors/:id
 export const updateAuthor = async (req, res, next) => {
   try {
+    if (req.body.name !== undefined && typeof req.body.name !== 'string') {
+      res.status(400);
+      return next(new Error('Validation failed: name must be a string'));
+    }
     const author = await Author.findByIdAndUpdate(req.params.id, req.body, {
       returnDocument: 'after',
       runValidators: true
@@ -61,7 +97,7 @@ export const updateAuthor = async (req, res, next) => {
       return next(new Error('Author not found'));
     }
 
-    res.status(200).json({ success: true, data: author });
+    res.status(200).json({ data: author });
   } catch (error) {
     next(error);
   }
@@ -85,7 +121,7 @@ export const deleteAuthor = async (req, res, next) => {
 
     await Author.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({ success: true, data: {} });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

@@ -1,47 +1,67 @@
 import Book from '../models/bookModel.js';
 import Author from '../models/authorModel.js';
 
+const escapeRegex = (text) => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 // GET /books
 export const getBooks = async (req, res, next) => {
   try {
-    const pageStr = req.query.page;
-    const limitStr = req.query.limit;
+    let validPage = 1;
+    let validLimit = 10;
 
-    if (pageStr && (isNaN(pageStr) || parseInt(pageStr, 10) < 1)) {
-      res.status(400);
-      return next(new Error('Page must be a positive integer'));
+    if (req.query.page !== undefined && req.query.page !== '') {
+      const pageNum = Number(req.query.page);
+      if (!Number.isInteger(pageNum) || pageNum < 1) {
+        res.status(400);
+        return next(new Error('Page must be a positive integer'));
+      }
+      validPage = pageNum;
     }
-    if (limitStr && (isNaN(limitStr) || parseInt(limitStr, 10) < 1 || parseInt(limitStr, 10) > 100)) {
-      res.status(400);
-      return next(new Error('Limit must be a positive integer between 1 and 100'));
+
+    if (req.query.limit !== undefined && req.query.limit !== '') {
+      const limitNum = Number(req.query.limit);
+      if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
+        res.status(400);
+        return next(new Error('Limit must be a positive integer between 1 and 100'));
+      }
+      validLimit = limitNum;
     }
     
-    const validPage = pageStr ? parseInt(pageStr, 10) : 1;
-    const validLimit = limitStr ? parseInt(limitStr, 10) : 10;
     const startIndex = (validPage - 1) * validLimit;
 
     const query = {};
 
     if (req.query.genre) {
-      query.genre = { $regex: new RegExp('^' + req.query.genre + '$', 'i') };
+      if (Array.isArray(req.query.genre)) {
+        res.status(400);
+        return next(new Error('Genre parameter must be a single string, not an array'));
+      }
+      const safeGenre = escapeRegex(req.query.genre);
+      query.genre = { $regex: new RegExp('^' + safeGenre + '$', 'i') };
     }
 
     if (req.query.search) {
-      query.title = { $regex: req.query.search, $options: 'i' };
+      if (Array.isArray(req.query.search)) {
+        res.status(400);
+        return next(new Error('Search parameter must be a single string, not an array'));
+      }
+      const safeSearch = escapeRegex(req.query.search);
+      query.title = { $regex: safeSearch, $options: 'i' };
     }
 
     const total = await Book.countDocuments(query);
     const books = await Book.find(query).skip(startIndex).limit(validLimit);
 
     res.status(200).json({ 
-      success: true, 
-      count: books.length,
+      data: books,
       pagination: {
-        total,
         page: validPage,
-        pages: Math.ceil(total / validLimit)
-      },
-      data: books 
+        limit: validLimit,
+        total,
+        totalPages: Math.ceil(total / validLimit)
+      }
     });
   } catch (error) {
     next(error);
@@ -57,7 +77,12 @@ export const getBook = async (req, res, next) => {
       return next(new Error('Book not found'));
     }
 
-    res.status(200).json({ success: true, data: book });
+    if (book.author === null) {
+      res.status(500);
+      return next(new Error('Data integrity error: Referenced author no longer exists'));
+    }
+
+    res.status(200).json({ data: book });
   } catch (error) {
     next(error);
   }
@@ -66,6 +91,11 @@ export const getBook = async (req, res, next) => {
 // POST /books
 export const createBook = async (req, res, next) => {
   try {
+    if (req.body.title !== undefined && typeof req.body.title !== 'string') {
+      res.status(400);
+      return next(new Error('Validation failed: title must be a string'));
+    }
+
     if (req.body.author) {
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
@@ -75,7 +105,7 @@ export const createBook = async (req, res, next) => {
     }
 
     const book = await Book.create(req.body);
-    res.status(201).json({ success: true, data: book });
+    res.status(201).json({ data: book });
   } catch (error) {
     next(error);
   }
@@ -84,6 +114,11 @@ export const createBook = async (req, res, next) => {
 // PUT /books/:id
 export const updateBook = async (req, res, next) => {
   try {
+    if (req.body.title !== undefined && typeof req.body.title !== 'string') {
+      res.status(400);
+      return next(new Error('Validation failed: title must be a string'));
+    }
+
     if (req.body.author) {
       const authorExists = await Author.findById(req.body.author);
       if (!authorExists) {
@@ -102,7 +137,7 @@ export const updateBook = async (req, res, next) => {
       return next(new Error('Book not found'));
     }
 
-    res.status(200).json({ success: true, data: book });
+    res.status(200).json({ data: book });
   } catch (error) {
     next(error);
   }
@@ -119,7 +154,7 @@ export const deleteBook = async (req, res, next) => {
 
     await Book.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({ success: true, data: {} });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }

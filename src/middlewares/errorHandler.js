@@ -13,10 +13,16 @@ export const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     statusCode = 400;
     message = 'Validation failed';
-    errors = Object.values(err.errors).map((val) => ({
-      field: val.path,
-      message: val.message
-    }));
+    errors = Object.values(err.errors).map((val) => {
+      let msg = val.message;
+      if (val.name === 'CastError') {
+        msg = `Invalid data type for ${val.path}`;
+      }
+      return {
+        field: val.path,
+        message: msg
+      };
+    });
   }
 
   // Mongoose Duplicate Key Error (e.g. unique fields)
@@ -32,15 +38,12 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   const response = {
-    success: false,
     message
   };
 
   if (errors.length > 0) {
     response.errors = errors;
   }
-
-
 
   res.status(statusCode).json(response);
 };

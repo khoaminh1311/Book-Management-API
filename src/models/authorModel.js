@@ -19,7 +19,7 @@ const authorSchema = new mongoose.Schema({
     validate: {
       validator: function(value) {
         if (value === undefined || value === null) return true;
-        return value > 0 && value <= new Date().getFullYear();
+        return Number.isInteger(value) && value > 0 && value <= new Date().getFullYear();
       },
       message: 'Birth year must be a positive integer and cannot be in the future'
     }
