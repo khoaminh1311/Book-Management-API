@@ -16,14 +16,21 @@ const bookSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    min: [0, 'Price cannot be negative']
+    min: [0, 'Price cannot be negative'],
+    validate: {
+      validator: function(value) {
+        if (value === undefined || value === null) return true;
+        return Number.isInteger(value);
+      },
+      message: 'Price must be a valid integer'
+    }
   },
   publishedYear: {
     type: Number,
     validate: {
       validator: function(value) {
         if (value === undefined || value === null) return true;
-        return value > 0 && value <= new Date().getFullYear();
+        return Number.isInteger(value) && value > 0 && value <= new Date().getFullYear();
       },
       message: 'Published year must be a positive integer and cannot be in the future'
     }

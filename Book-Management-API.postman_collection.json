@@ -31,6 +31,22 @@
           }
         },
         {
+          "name": "Get Author By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/authors/<REPLACE_AUTHOR_ID>",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "authors",
+                "<REPLACE_AUTHOR_ID>"
+              ]
+            }
+          }
+        },
+        {
           "name": "Create Author",
           "request": {
             "method": "POST",
