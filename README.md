@@ -3,6 +3,10 @@
 A robust RESTful API built with Node.js, Express, and MongoDB for managing Books and Authors. 
 Developed with a focus on strict validation, error handling, and robust querying capabilities.
 
+## Live API URL (Production)
+
+🚀 **Production API:** `https://book-management-api-xxx.onrender.com` *(Replace `xxx` with your actual Render URL after deployment)*
+
 ## Features
 
 - **Authors Management**: Full CRUD operations for authors.
@@ -68,3 +72,15 @@ Developed with a focus on strict validation, error handling, and robust querying
 
 ## Testing
 A Postman collection (`Book-Management-API.postman_collection.json`) is included in the root directory for automated and systematic API testing. Import it into Postman to test all routes.
+
+## Deployment to Render
+
+This project is configured for seamless deployment to **Render**.
+
+1. Create a GitHub repository and push your code to it.
+2. Sign up/Log in to [Render](https://render.com).
+3. Click on **New +** and select **Blueprint**.
+4. Connect your GitHub account and select this repository.
+5. Render will automatically read the `render.yaml` file included in this project.
+6. **Important:** When prompted, enter your actual `MONGODB_URI` connection string for the environment variable.
+7. Click **Apply** to deploy. Once successful, update the **Live API URL** at the top of this README!
