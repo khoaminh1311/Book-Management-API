@@ -30,6 +30,14 @@ app.use((req, res, next) => {
   next();
 });
 
+// Root Route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to Book Management API',
+    docs: 'Please refer to the repository README or Postman collection for API documentation.'
+  });
+});
+
 // Routes
 app.use('/authors', authorRoutes);
 app.use('/books', bookRoutes);
