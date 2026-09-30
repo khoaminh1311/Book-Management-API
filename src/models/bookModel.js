@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
+import { isValidPastYear, isValidOptionalInteger } from '../utils/validators.js';
 
 const bookSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Book title is required'],
-    trim: true
+    trim: true,
+    maxlength: [150, 'Title cannot exceed 150 characters']
   },
   description: {
     type: String,
-    trim: true
+    trim: true,
+    maxlength: [1000, 'Description cannot exceed 1000 characters']
   },
   genre: {
     type: String,
@@ -18,20 +21,14 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     min: [0, 'Price cannot be negative'],
     validate: {
-      validator: function(value) {
-        if (value === undefined || value === null) return true;
-        return Number.isInteger(value);
-      },
+      validator: isValidOptionalInteger,
       message: 'Price must be a valid integer'
     }
   },
   publishedYear: {
     type: Number,
     validate: {
-      validator: function(value) {
-        if (value === undefined || value === null) return true;
-        return Number.isInteger(value) && value > 0 && value <= new Date().getFullYear();
-      },
+      validator: isValidPastYear,
       message: 'Published year must be a positive integer and cannot be in the future'
     }
   },
@@ -41,7 +38,7 @@ const bookSchema = new mongoose.Schema({
     required: [true, 'Author is required']
   }
 }, {
-  timestamps: true // This option automatically adds createdAt and updatedAt fields
+  timestamps: true
 });
 
 export default mongoose.model('Book', bookSchema);

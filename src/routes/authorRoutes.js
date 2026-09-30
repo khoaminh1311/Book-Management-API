@@ -6,13 +6,15 @@ import {
   updateAuthor,
   deleteAuthor
 } from '../controllers/authorController.js';
+import Author from '../models/authorModel.js';
+import { paginateMiddleware, validateStringField, checkDocumentExists, sanitizeCreateBody } from '../middlewares/common.js';
 
 const router = express.Router();
 
-router.get('/', getAuthors);
-router.get('/:id', getAuthor);
-router.post('/', createAuthor);
-router.put('/:id', updateAuthor);
-router.delete('/:id', deleteAuthor);
+router.get('/', paginateMiddleware, getAuthors);
+router.get('/:id', checkDocumentExists(Author), getAuthor);
+router.post('/', sanitizeCreateBody, validateStringField('name'), createAuthor);
+router.put('/:id', checkDocumentExists(Author), validateStringField('name'), updateAuthor);
+router.delete('/:id', checkDocumentExists(Author), deleteAuthor);
 
 export default router;
