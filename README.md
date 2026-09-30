@@ -26,14 +26,14 @@ Developed with a focus on strict validation, error handling, and robust querying
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (v16 or higher recommended)
+- [Node.js](https://nodejs.org/) (v22 or higher recommended)
 - [MongoDB](https://www.mongodb.com/) (Local installation or MongoDB Atlas URI)
 
 ## Installation & Setup
 
-1. **Clone the repository (if applicable)**
+1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/khoaminh1311/Book-Management-API
    cd Book-Management-API
    ```
 
@@ -46,15 +46,22 @@ Developed with a focus on strict validation, error handling, and robust querying
    Create a `.env` file in the root directory with the following variables:
    ```env
    PORT=5000
-   MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>
+   MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>
    ```
 
 4. **Start the Development Server**
    ```bash
+   # For live-reloading during development
+   npm run dev
+
+   # Or for standard startup
    npm start
    ```
 
 ## API Reference
+
+### General
+- `GET /` - Root endpoint, returns a welcome message and basic documentation link.
 
 ### Authors
 - `GET /authors` - Get all authors (Supports pagination: `?page=1&limit=10`)
@@ -79,8 +86,11 @@ This project is configured for seamless deployment to **Render**.
 
 1. Create a GitHub repository and push your code to it.
 2. Sign up/Log in to [Render](https://render.com).
-3. Click on **New +** and select **Blueprint**.
-4. Connect your GitHub account and select this repository.
-5. Render will automatically read the `render.yaml` file included in this project.
-6. **Important:** When prompted, enter your actual `MONGODB_URI` connection string for the environment variable.
-7. Click **Apply** to deploy. Once successful, update the **Live API URL** at the top of this README!
+3. Click on **New +** and select **Web Service**.
+4. Select **Build and deploy from a Git repository** and connect your GitHub account.
+5. Select this repository.
+6. Render will automatically read the `render.yaml` file and configure most settings (Build/Start commands, Node version).
+7. Scroll down to **Environment Variables**, click **Add Environment Variable**:
+   - **Key:** `MONGODB_URI`
+   - **Value:** `your_mongodb_atlas_connection_string`
+8. Click **Create Web Service** to deploy. Once successful, the API is live!
