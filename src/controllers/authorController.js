@@ -53,6 +53,11 @@ export const updateAuthor = asyncHandler(async (req, res, next) => {
     returnDocument: 'after',
     runValidators: true
   });
+
+  if (!author) {
+    return next(new AppError('Author not found', 404));
+  }
+
   res.status(200).json({ data: author });
 });
 
@@ -64,6 +69,10 @@ export const deleteAuthor = asyncHandler(async (req, res, next) => {
     return next(new AppError('Cannot delete author because they are referenced by one or more books', 409));
   }
 
-  await Author.findByIdAndDelete(req.params.id);
+  const author = await Author.findByIdAndDelete(req.params.id);
+  if (!author) {
+    return next(new AppError('Author not found', 404));
+  }
+
   res.status(204).send();
 });
