@@ -4,10 +4,11 @@ import authorRoutes from './routes/authorRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-
 import { createError } from './utils/errors.js';
+import cors from 'cors';
 
 const app = express();
+app.use(cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
