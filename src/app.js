@@ -20,9 +20,9 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json({ limit: '10kb' }));
 
-// Check if body is parsed properly (prevents text/plain causing 500)
+// Validate Content-Type header for requests with body (POST, PUT)
 app.use((req, res, next) => {
-  if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+  if (['POST', 'PUT'].includes(req.method)) {
     if (!req.is('application/json')) {
       return next(createError(res, 400, 'Content-Type must be application/json'));
     }
