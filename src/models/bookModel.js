@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { isValidPastYear, isValidOptionalInteger } from '../utils/validators.js';
+import { isValidPastYear } from '../utils/validators.js';
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -20,10 +20,6 @@ const bookSchema = new mongoose.Schema({
   price: {
     type: Number,
     min: [0, 'Price cannot be negative'],
-    validate: {
-      validator: isValidOptionalInteger,
-      message: 'Price must be a valid integer'
-    }
   },
   publishedYear: {
     type: Number,
