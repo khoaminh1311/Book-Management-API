@@ -4,7 +4,7 @@ import authorRoutes from './routes/authorRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-import { createError } from './utils/errors.js';
+import { AppError } from './utils/errors.js';
 import cors from 'cors';
 
 const app = express();
@@ -25,7 +25,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use((req, res, next) => {
   if (['POST', 'PUT'].includes(req.method)) {
     if (!req.is('application/json')) {
-      return next(createError(res, 400, 'Content-Type must be application/json'));
+      return next(new AppError('Content-Type must be application/json', 400));
     }
   }
   next();

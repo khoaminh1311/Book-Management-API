@@ -1,6 +1,6 @@
 import Book from '../models/bookModel.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { createError } from '../utils/errors.js';
+import { AppError } from '../utils/errors.js';
 import { filterAllowedFields } from '../utils/helpers.js';
 
 const escapeRegex = (text) => {
@@ -14,7 +14,7 @@ export const getBooks = asyncHandler(async (req, res, next) => {
 
   if (req.query.genre) {
     if (typeof req.query.genre !== 'string') {
-      return next(createError(res, 400, 'Genre parameter must be a single string'));
+      return next(new AppError('Genre parameter must be a single string', 400));
     }
     const safeGenre = escapeRegex(req.query.genre);
     query.genre = { $regex: new RegExp('^' + safeGenre + '$', 'i') };
@@ -22,7 +22,7 @@ export const getBooks = asyncHandler(async (req, res, next) => {
 
   if (req.query.search) {
     if (typeof req.query.search !== 'string') {
-      return next(createError(res, 400, 'Search parameter must be a single string'));
+      return next(new AppError('Search parameter must be a single string', 400));
     }
     const safeSearch = escapeRegex(req.query.search);
     query.title = { $regex: safeSearch, $options: 'i' };
@@ -45,7 +45,7 @@ export const getBooks = asyncHandler(async (req, res, next) => {
 // GET /books/:id
 export const getBook = asyncHandler(async (req, res, next) => {
   if (req.document.author === null) {
-    return next(createError(res, 500, 'Data integrity error: Referenced author no longer exists'));
+    return next(new AppError('Data integrity error: Referenced author no longer exists', 500));
   }
 
   res.status(200).json({ data: req.document });
