@@ -34,15 +34,17 @@ export const getAuthor = asyncHandler(async (req, res, next) => {
   });
 });
 
+const ALLOWED_FIELDS = ['name', 'bio', 'nationality', 'birthYear'];
+
 // POST /authors
 export const createAuthor = asyncHandler(async (req, res, next) => {
-  const author = await Author.create(req.body);
+  const safeData = filterAllowedFields(req.body, ALLOWED_FIELDS);
+  const author = await Author.create(safeData);
   res.status(201).json({ data: author });
 });
 
 // PUT /authors/:id
 export const updateAuthor = asyncHandler(async (req, res, next) => {
-  const ALLOWED_FIELDS = ['name', 'bio', 'nationality', 'birthYear'];
   const safeUpdates = filterAllowedFields(req.body, ALLOWED_FIELDS);
 
   const author = await Author.findByIdAndUpdate(req.params.id, safeUpdates, {

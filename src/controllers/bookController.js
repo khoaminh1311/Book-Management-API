@@ -51,15 +51,17 @@ export const getBook = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: req.document });
 });
 
+const ALLOWED_FIELDS = ['title', 'description', 'genre', 'price', 'publishedYear', 'author'];
+
 // POST /books
 export const createBook = asyncHandler(async (req, res, next) => {
-  const book = await Book.create(req.body);
+  const safeData = filterAllowedFields(req.body, ALLOWED_FIELDS);
+  const book = await Book.create(safeData);
   res.status(201).json({ data: book });
 });
 
 // PUT /books/:id
 export const updateBook = asyncHandler(async (req, res, next) => {
-  const ALLOWED_FIELDS = ['title', 'description', 'genre', 'price', 'publishedYear', 'author'];
   const safeUpdates = filterAllowedFields(req.body, ALLOWED_FIELDS);
 
   const book = await Book.findByIdAndUpdate(req.params.id, safeUpdates, {
