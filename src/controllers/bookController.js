@@ -51,7 +51,7 @@ export const getBook = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: req.document });
 });
 
-const ALLOWED_FIELDS = ['title', 'description', 'genre', 'price', 'publishedYear', 'author'];
+const ALLOWED_FIELDS = ['title', 'description', 'genre', 'price', 'publishedYear', 'coverImage', 'author'];
 
 // POST /books
 export const createBook = asyncHandler(async (req, res, next) => {

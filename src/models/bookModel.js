@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { isValidPastYear } from '../utils/validators.js';
+import { isValidPastYear, isValidUrl } from '../utils/validators.js';
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -26,6 +26,15 @@ const bookSchema = new mongoose.Schema({
     validate: {
       validator: isValidPastYear,
       message: 'Published year must be a positive integer and cannot be in the future'
+    }
+  },
+  coverImage: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Cover image URL cannot exceed 500 characters'],
+    validate: {
+      validator: isValidUrl,
+      message: 'Cover image must be a valid HTTP or HTTPS URL'
     }
   },
   author: {
