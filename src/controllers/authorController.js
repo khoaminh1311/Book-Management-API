@@ -34,6 +34,7 @@ export const getAuthor = asyncHandler(async (req, res, next) => {
   });
 });
 
+// POST /authors
 export const createAuthor = asyncHandler(async (req, res, next) => {
   const author = await Author.create(req.body);
   res.status(201).json({ data: author });

@@ -31,7 +31,7 @@ export const getBooks = asyncHandler(async (req, res, next) => {
   const total = await Book.countDocuments(query);
   const books = await Book.find(query).skip(startIndex).limit(validLimit);
 
-  res.status(200).json({ 
+  res.status(200).json({
     data: books,
     pagination: {
       page: validPage,
@@ -51,6 +51,7 @@ export const getBook = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: req.document });
 });
 
+// POST /books
 export const createBook = asyncHandler(async (req, res, next) => {
   const book = await Book.create(req.body);
   res.status(201).json({ data: book });
