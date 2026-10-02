@@ -1,6 +1,6 @@
 import Author from '../models/authorModel.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { createError } from '../utils/errors.js';
+import { AppError } from '../utils/errors.js';
 
 export const paginateMiddleware = (req, res, next) => {
   let validPage = 1;
@@ -9,7 +9,7 @@ export const paginateMiddleware = (req, res, next) => {
   if (req.query.page !== undefined && req.query.page !== '') {
     const pageNum = Number(req.query.page);
     if (!Number.isInteger(pageNum) || pageNum < 1) {
-      return next(createError(res, 400, 'Page must be a positive integer'));
+      return next(new AppError('Page must be a positive integer', 400));
     }
     validPage = pageNum;
   }
@@ -17,7 +17,7 @@ export const paginateMiddleware = (req, res, next) => {
   if (req.query.limit !== undefined && req.query.limit !== '') {
     const limitNum = Number(req.query.limit);
     if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > 100) {
-      return next(createError(res, 400, 'Limit must be a positive integer between 1 and 100'));
+      return next(new AppError('Limit must be a positive integer between 1 and 100', 400));
     }
     validLimit = limitNum;
   }
@@ -32,7 +32,7 @@ export const paginateMiddleware = (req, res, next) => {
 
 export const validateStringField = (fieldName) => (req, res, next) => {
   if (req.body[fieldName] !== undefined && typeof req.body[fieldName] !== 'string') {
-    return next(createError(res, 400, `Validation failed: ${fieldName} must be a string`));
+    return next(new AppError(`Validation failed: ${fieldName} must be a string`, 400));
   }
   next();
 };
@@ -41,7 +41,7 @@ export const checkAuthorExists = asyncHandler(async (req, res, next) => {
   if (req.body.author) {
     const authorExists = await Author.findById(req.body.author);
     if (!authorExists) {
-      return next(createError(res, 404, 'Author not found'));
+      return next(new AppError('Author not found', 404));
     }
   }
   next();
@@ -54,7 +54,7 @@ export const checkDocumentExists = (Model, populateOpts) => asyncHandler(async (
   }
   const document = await query;
   if (!document) {
-    return next(createError(res, 404, `${Model.modelName} not found`));
+    return next(new AppError(`${Model.modelName} not found`, 404));
   }
   req.document = document;
   next();
@@ -62,7 +62,7 @@ export const checkDocumentExists = (Model, populateOpts) => asyncHandler(async (
 
 export const sanitizeCreateBody = (req, res, next) => {
   if (Array.isArray(req.body)) {
-    return next(createError(res, 400, 'Request body must be a JSON object, not an array'));
+    return next(new AppError('Request body must be a JSON object, not an array', 400));
   }
   if (req.body && req.body._id) {
     delete req.body._id;

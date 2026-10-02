@@ -1,7 +1,7 @@
 import Author from '../models/authorModel.js';
 import Book from '../models/bookModel.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { createError } from '../utils/errors.js';
+import { AppError } from '../utils/errors.js';
 import { filterAllowedFields } from '../utils/helpers.js';
 
 // GET /authors
@@ -61,7 +61,7 @@ export const deleteAuthor = asyncHandler(async (req, res, next) => {
   // Check if author is referenced by any books
   const booksCount = await Book.countDocuments({ author: req.params.id });
   if (booksCount > 0) {
-    return next(createError(res, 409, 'Cannot delete author because they are referenced by one or more books'));
+    return next(new AppError('Cannot delete author because they are referenced by one or more books', 409));
   }
 
   await Author.findByIdAndDelete(req.params.id);
