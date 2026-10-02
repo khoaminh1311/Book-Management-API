@@ -26,9 +26,11 @@ export const getAuthors = asyncHandler(async (req, res, next) => {
 export const getAuthor = asyncHandler(async (req, res, next) => {
   const books = await Book.find({ author: req.params.id });
 
+  const authorData = req.document.toObject();
+
   res.status(200).json({
     data: {
-      ...req.document._doc,
+      ...authorData,
       books
     }
   });
