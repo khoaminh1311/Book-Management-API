@@ -68,11 +68,21 @@ export const updateBook = asyncHandler(async (req, res, next) => {
     returnDocument: 'after',
     runValidators: true
   });
+
+  if (!book) {
+    return next(new AppError('Book not found', 404));
+  }
+
   res.status(200).json({ data: book });
 });
 
 // DELETE /books/:id
 export const deleteBook = asyncHandler(async (req, res, next) => {
-  await Book.findByIdAndDelete(req.params.id);
+  const book = await Book.findByIdAndDelete(req.params.id);
+
+  if (!book) {
+    return next(new AppError('Book not found', 404));
+  }
+
   res.status(204).send();
 });

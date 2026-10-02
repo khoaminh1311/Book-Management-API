@@ -14,7 +14,7 @@ const router = express.Router();
 router.get('/', paginateMiddleware, getBooks);
 router.get('/:id', checkDocumentExists(Book, 'author'), getBook);
 router.post('/', sanitizeCreateBody, validateStringField('title'), checkAuthorExists, createBook);
-router.put('/:id', checkDocumentExists(Book), validateStringField('title'), checkAuthorExists, updateBook);
-router.delete('/:id', checkDocumentExists(Book), deleteBook);
+router.put('/:id', validateStringField('title'), checkAuthorExists, updateBook);
+router.delete('/:id', deleteBook);
 
 export default router;
