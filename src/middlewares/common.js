@@ -31,15 +31,17 @@ export const paginateMiddleware = (req, res, next) => {
 };
 
 export const validateStringField = (fieldName) => (req, res, next) => {
-  if (req.body[fieldName] !== undefined && typeof req.body[fieldName] !== 'string') {
+  const body = req.body || {};
+  if (body[fieldName] !== undefined && typeof body[fieldName] !== 'string') {
     return next(new AppError(`Validation failed: ${fieldName} must be a string`, 400));
   }
   next();
 };
 
 export const checkAuthorExists = asyncHandler(async (req, res, next) => {
-  if (req.body.author) {
-    const authorExists = await Author.findById(req.body.author);
+  const body = req.body || {};
+  if (body.author) {
+    const authorExists = await Author.findById(body.author);
     if (!authorExists) {
       return next(new AppError('Author not found', 404));
     }
