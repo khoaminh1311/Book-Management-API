@@ -62,7 +62,7 @@ export const checkDocumentExists = (Model, populateOpts) => asyncHandler(async (
   next();
 });
 
-export const sanitizeCreateBody = (req, res, next) => {
+export const sanitizeRequestBody = (req, res, next) => {
   if (Array.isArray(req.body)) {
     return next(new AppError('Request body must be a JSON object, not an array', 400));
   }
