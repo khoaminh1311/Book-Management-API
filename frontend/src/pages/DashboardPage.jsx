@@ -17,6 +17,7 @@ export default function DashboardPage() {
 
   const [search, setSearch] = useState('');
   const [genre, setGenre] = useState('All Genres');
+  const [sortBy, setSortBy] = useState('recent');
   const [page, setPage] = useState(1);
   const limit = 8;
   const [pagination, setPagination] = useState({ page: 1, limit: 8, total: 0, totalPages: 1 });
@@ -98,7 +99,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-1">
-              <span className="text-on-surface-variant">Collection</span>
+              <span className="text-on-surface-variant">Dashboard</span>
               <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               <span className="text-primary font-semibold">Books</span>
             </div>
@@ -109,14 +110,6 @@ export default function DashboardPage() {
               Manage, explore, and organize volumes in your personal collection.
             </p>
           </div>
-
-          <Link
-            to="/add-book"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-medium text-sm shadow-md hover:bg-primary-container transition-all"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>Add New Volume</span>
-          </Link>
         </div>
 
         {/* 4 Quick Metrics Summary Cards */}
@@ -134,6 +127,8 @@ export default function DashboardPage() {
         onSearchChange={setSearch}
         genre={genre}
         onGenreChange={setGenre}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
       />
 
       {/* SECTION 3: BOOKS CATALOG GRID */}
@@ -179,9 +174,18 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {books.map((book) => (
-              <BookCard key={book._id} book={book} onDelete={handleDeleteBook} />
-            ))}
+            {[...books]
+              .sort((a, b) => {
+                if (sortBy === 'title-asc') return (a.title || '').localeCompare(b.title || '');
+                if (sortBy === 'title-desc') return (b.title || '').localeCompare(a.title || '');
+                if (sortBy === 'price-asc') return (Number(a.price) || 0) - (Number(b.price) || 0);
+                if (sortBy === 'price-desc') return (Number(b.price) || 0) - (Number(a.price) || 0);
+                if (sortBy === 'year-desc') return (Number(b.publishedYear) || 0) - (Number(a.publishedYear) || 0);
+                return 0;
+              })
+              .map((book) => (
+                <BookCard key={book._id} book={book} onDelete={handleDeleteBook} />
+              ))}
           </div>
         )}
 
