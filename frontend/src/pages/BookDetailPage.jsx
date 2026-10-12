@@ -233,9 +233,12 @@ export default function BookDetailPage() {
               <h2 className="font-serif font-medium text-[20px] leading-[28px]">Description</h2>
             </div>
 
-            <div className="text-sm sm:text-[16px] leading-[26px] text-[#1A1C1B] font-sans whitespace-pre-line">
-              {book.description || 'No detailed curatorial description has been recorded for this volume yet.'}
-            </div>
+            <div
+              className="text-sm sm:text-[16px] leading-[26px] text-[#1A1C1B] font-sans prose prose-sm max-w-none [&_blockquote]:border-l-2 [&_blockquote]:border-[#745939] [&_blockquote]:pl-3 [&_blockquote]:my-2 [&_blockquote]:italic [&_blockquote]:text-[#45474C] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_a]:text-[#745939] [&_a]:underline [&_strike]:line-through [&_s]:line-through [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
+              dangerouslySetInnerHTML={{
+                __html: book.description || '<span class="italic text-[#75777D]">No detailed curatorial description has been recorded for this volume yet.</span>'
+              }}
+            />
           </div>
 
           {/* Interactive Author Mini-Card (Figma #1:867 - #1:885) */}

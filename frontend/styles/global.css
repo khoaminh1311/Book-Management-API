@@ -17,3 +17,16 @@
     font-family: var(--font-serif);
   }
 }
+
+@layer utilities {
+  .font-label-sm {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .text-label-sm {
+    font-size: var(--text-label-sm);
+    line-height: 0.875rem;
+  }
+}

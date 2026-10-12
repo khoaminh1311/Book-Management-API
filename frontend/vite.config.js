@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/books': 'http://localhost:5000',
       '/authors': 'http://localhost:5000',
+      '/upload': 'http://localhost:5000',
     },
   },
 });
