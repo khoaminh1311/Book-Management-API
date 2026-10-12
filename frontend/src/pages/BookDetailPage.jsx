@@ -111,26 +111,26 @@ export default function BookDetailPage() {
   const archivalNo = book._id ? `ARCHIVAL NO. ${book._id.slice(-4).toUpperCase()}` : 'ARCHIVAL NO. 492';
 
   return (
-    <div className="p-6 md:p-8 lg:p-12 max-w-7xl w-full mx-auto flex flex-col gap-6 lg:gap-8">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-5 sm:gap-6 lg:gap-8">
       {/* Top Breadcrumbs (Figma #1:801 - #1:807) */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#45474C] font-sans">
-        <Link to="/" className="text-[#45474C] hover:text-primary transition-colors">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-[#45474C] font-sans">
+        <Link to="/" className="text-[#45474C] hover:text-primary transition-colors shrink-0">
           Books
         </Link>
-        <span className="material-symbols-outlined text-[14px] text-[#75777D]">chevron_right</span>
-        <span className="font-medium text-[#1A1C1B] truncate max-w-md">{book.title}</span>
+        <span className="material-symbols-outlined text-[14px] text-[#75777D] shrink-0">chevron_right</span>
+        <span className="font-medium text-[#1A1C1B] truncate max-w-[220px] sm:max-w-md">{book.title}</span>
       </nav>
 
       {/* Main Editorial Two-Column Split Canvas (Figma #1:808) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
-        {/* LEFT COLUMN: Physical Volume Presentation (5 Columns - Figma #1:809: borderRadius 12px, padding 48px) */}
-        <section className="lg:col-span-5 bg-[#F4F3F1] rounded-xl p-8 lg:p-12 relative overflow-hidden flex flex-col items-center shadow-sm border border-outline-variant/40">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-start">
+        {/* LEFT COLUMN: Physical Volume Presentation (5 Columns - Figma #1:809) */}
+        <section className="lg:col-span-5 bg-[#F4F3F1] rounded-xl p-6 sm:p-8 lg:p-12 relative overflow-hidden flex flex-col items-center shadow-sm border border-outline-variant/40">
           {/* Ambient subtle light gradients (Figma #1:810, #1:811) */}
           <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-[rgba(255,221,184,0.35)] blur-3xl pointer-events-none" />
           <div className="absolute -bottom-16 -right-16 w-64 h-64 rounded-full bg-[rgba(216,227,251,0.45)] blur-3xl pointer-events-none" />
 
           {/* Physical Book Presentation Mockup (Figma #1:812 - #1:819) */}
-          <div className="relative group max-w-[272px] w-full aspect-[2/3] z-10">
+          <div className="relative group max-w-[220px] sm:max-w-[260px] md:max-w-[272px] w-full aspect-[2/3] z-10">
             {/* Spine shadow simulation (Figma #1:813) */}
             <div className="absolute -inset-1.5 rounded-xl bg-gradient-to-r from-primary/30 via-transparent to-primary/10 blur-md pointer-events-none" />
 
@@ -150,91 +150,91 @@ export default function BookDetailPage() {
               <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-primary/25 via-primary/5 to-transparent pointer-events-none" />
 
               {/* Archival Seal Tag Floating on Cover (Figma #1:818 - #1:819) */}
-              <div className="absolute top-4 right-4 bg-[#091426]/85 backdrop-blur px-2.5 py-1 rounded text-white text-[11px] font-semibold tracking-wider uppercase shadow-md font-sans">
+              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-[#091426]/85 backdrop-blur px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-white text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase shadow-md font-sans">
                 {archivalNo}
               </div>
             </div>
           </div>
 
-          {/* Quick Action Micro Bar under Cover (Figma #1:820 - #1:831: padding 10px 20px, borderRadius 8px, 14px font) */}
-          <div className="mt-8 flex items-center justify-center gap-3 w-full z-10">
+          {/* Quick Action Micro Bar under Cover (Figma #1:820 - #1:831) */}
+          <div className="mt-6 sm:mt-8 flex items-center justify-center gap-3 w-full z-10 max-w-[320px]">
             {/* Edit Book Button (Figma #1:822) */}
             <Link
               to={`/edit-book/${book._id}`}
-              className="flex-1 max-w-[136px] flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-lg bg-white border border-outline-variant/40 text-[#1A1C1B] font-semibold text-sm shadow-sm hover:bg-surface-container transition-colors font-sans"
+              className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg bg-white border border-outline-variant/40 text-[#1A1C1B] font-semibold text-xs sm:text-sm shadow-sm hover:bg-surface-container transition-colors font-sans"
             >
               <span className="material-symbols-outlined text-[18px]">edit</span>
-              <span className="leading-tight text-center">Edit<br />Book</span>
+              <span className="leading-tight text-center">Edit Book</span>
             </Link>
 
             {/* Delete Book Button (Figma #1:827) */}
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className="flex-1 max-w-[136px] flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-lg bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-sm shadow-sm hover:bg-[#FFDAD6]/80 transition-colors font-sans"
+              className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm shadow-sm hover:bg-[#FFDAD6]/80 transition-colors font-sans"
             >
               <span className="material-symbols-outlined text-[18px]">delete</span>
-              <span className="leading-tight text-center">Delete<br />Book</span>
+              <span className="leading-tight text-center">Delete Book</span>
             </button>
           </div>
         </section>
 
         {/* RIGHT COLUMN: Catalog Content, Curatorial Summary & Author Card (7 Columns - Figma #1:832) */}
-        <section className="lg:col-span-7 flex flex-col gap-6 lg:gap-8">
+        <section className="lg:col-span-7 flex flex-col gap-5 sm:gap-6 lg:gap-8">
           {/* Header Banner & Taxonomic Indicators (Figma #1:833 - #1:850) */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5 sm:gap-3">
             {/* Badges Row (Figma #1:834 - #1:838) */}
-            <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               {book.genre && (
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-[rgba(255,221,184,0.5)] text-[#745939] font-sans">
+                <span className="inline-block px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold uppercase tracking-wider bg-[rgba(255,221,184,0.5)] text-[#745939] font-sans">
                   {book.genre}
                 </span>
               )}
               {book.publishedYear && (
-                <span className="inline-block px-2.5 py-1 rounded text-xs font-semibold bg-[#EFEEEC] text-[#45474C] font-sans">
+                <span className="inline-block px-2 sm:px-2.5 py-1 rounded text-[11px] sm:text-xs font-semibold bg-[#EFEEEC] text-[#45474C] font-sans">
                   Published {book.publishedYear}
                 </span>
               )}
             </div>
 
             {/* Monumental Work Title (Figma #1:839 - #1:840: Newsreader Regular 48px/60px -0.02em) */}
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-[48px] lg:leading-[60px] tracking-[-0.02em] font-normal text-primary mt-1">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-[44px] lg:leading-[54px] xl:text-[48px] xl:leading-[60px] tracking-[-0.02em] font-normal text-primary mt-1 break-words">
               {book.title}
             </h1>
 
             {/* Author Byline & Core Evaluation Metrics (Figma #1:841 - #1:850) */}
-            <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
-              <div className="flex items-baseline gap-1.5 text-base text-[#45474C] font-sans">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pt-1 sm:pt-2">
+              <div className="flex items-baseline gap-1.5 text-sm sm:text-base text-[#45474C] font-sans">
                 <span>by</span>
                 {authorId ? (
                   <Link
                     to={`/authors/${authorId}`}
-                    className="font-serif font-medium text-xl text-primary hover:text-secondary underline decoration-1 underline-offset-4 transition-colors"
+                    className="font-serif font-medium text-lg sm:text-xl text-primary hover:text-secondary underline decoration-1 underline-offset-4 transition-colors"
                   >
                     {authorName}
                   </Link>
                 ) : (
-                  <span className="font-serif font-medium text-xl text-primary">{authorName}</span>
+                  <span className="font-serif font-medium text-lg sm:text-xl text-primary">{authorName}</span>
                 )}
               </div>
 
-              {/* Quantitative Appraisal Badge (Figma #1:847 - #1:850: style_9f155e5b: Newsreader Medium 500 20px) */}
-              <div className="bg-[#F4F3F1] px-4 py-2 rounded-xl flex items-baseline gap-2 border border-outline-variant/30 font-sans">
-                <span className="text-[11px] font-semibold tracking-wider text-[#45474C] uppercase">VALUE</span>
-                <span className="font-serif font-medium text-[20px] leading-[28px] text-[#1A1C1B]">{priceFormatted}</span>
+              {/* Quantitative Appraisal Badge (Figma #1:847 - #1:850) */}
+              <div className="bg-[#F4F3F1] px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-xl flex items-baseline gap-2 border border-outline-variant/30 font-sans w-fit">
+                <span className="text-[10px] sm:text-[11px] font-semibold tracking-wider text-[#45474C] uppercase">VALUE</span>
+                <span className="font-serif font-medium text-[18px] sm:text-[20px] leading-[26px] sm:leading-[28px] text-[#1A1C1B]">{priceFormatted}</span>
               </div>
             </div>
           </div>
 
           {/* Curatorial Overview & Thematic Description (Figma #1:851 - #1:866) */}
-          <div className="bg-surface-container-lowest p-6 sm:p-8 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col gap-4">
+          <div className="bg-surface-container-lowest p-5 sm:p-6 lg:p-8 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col gap-3 sm:gap-4">
             <div className="flex items-center gap-2 text-primary">
-              <span className="material-symbols-outlined text-[22px] text-[#745939]">menu_book</span>
-              <h2 className="font-serif font-medium text-[20px] leading-[28px]">Description</h2>
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px] text-[#745939]">menu_book</span>
+              <h2 className="font-serif font-medium text-[18px] sm:text-[20px] leading-[26px] sm:leading-[28px]">Description</h2>
             </div>
 
             <div
-              className="text-sm sm:text-[16px] leading-[26px] text-[#1A1C1B] font-sans prose prose-sm max-w-none [&_blockquote]:border-l-2 [&_blockquote]:border-[#745939] [&_blockquote]:pl-3 [&_blockquote]:my-2 [&_blockquote]:italic [&_blockquote]:text-[#45474C] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_a]:text-[#745939] [&_a]:underline [&_strike]:line-through [&_s]:line-through [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
+              className="text-xs sm:text-sm md:text-[15px] leading-[22px] sm:leading-[26px] text-[#1A1C1B] font-sans prose prose-sm max-w-none break-words [&_blockquote]:border-l-2 [&_blockquote]:border-[#745939] [&_blockquote]:pl-3 [&_blockquote]:my-2 [&_blockquote]:italic [&_blockquote]:text-[#45474C] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_a]:text-[#745939] [&_a]:underline [&_strike]:line-through [&_s]:line-through [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
               dangerouslySetInnerHTML={{
                 __html: book.description || '<span class="italic text-[#75777D]">No detailed curatorial description has been recorded for this volume yet.</span>'
               }}
@@ -243,19 +243,19 @@ export default function BookDetailPage() {
 
           {/* Interactive Author Mini-Card (Figma #1:867 - #1:885) */}
           {author && (
-            <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/40 shadow-sm flex items-center gap-5">
-              {/* Author Avatar circle (Figma #1:869 - #1:870: 48x48px, fill #E9E8E6, border #C5C6CD, text Newsreader 16px) */}
-              <div className="w-12 h-12 rounded-full bg-[#E9E8E6] flex items-center justify-center font-serif text-[16px] leading-[24px] tracking-[0.05em] font-medium text-primary shrink-0 border border-[#C5C6CD] shadow-sm">
+            <div className="bg-surface-container-lowest p-4 sm:p-6 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col sm:flex-row sm:items-start lg:items-center gap-4 sm:gap-5">
+              {/* Author Avatar circle (Figma #1:869 - #1:870: 48x48px, fill #E9E8E6, border #C5C6CD) */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#E9E8E6] flex items-center justify-center font-serif text-[15px] sm:text-[16px] leading-[24px] tracking-[0.05em] font-medium text-primary shrink-0 border border-[#C5C6CD] shadow-sm">
                 {getInitials(author.name)}
               </div>
 
               {/* Author Demographics, Link & Bio Stack (Figma #1:871 - #1:885) */}
-              <div className="min-w-0 flex-1 flex flex-col gap-2">
+              <div className="min-w-0 flex-1 flex flex-col gap-1.5 sm:gap-2">
                 <div className="flex flex-col gap-0.5">
                   {/* Author Name (Figma #1:875: Newsreader Medium 500 20px) */}
                   <Link
                     to={`/authors/${author._id}`}
-                    className="font-serif font-medium text-[20px] leading-[28px] text-primary hover:text-secondary hover:underline transition-colors block"
+                    className="font-serif font-medium text-lg sm:text-[20px] leading-[26px] sm:leading-[28px] text-primary hover:text-secondary hover:underline transition-colors block truncate"
                   >
                     {author.name}
                   </Link>
@@ -270,18 +270,18 @@ export default function BookDetailPage() {
                   </p>
                 </div>
 
-                {/* View Author Profile link (Figma #1:878 - #1:882: inline text link gap 4px directly under demographics) */}
+                {/* View Author Profile link (Figma #1:878 - #1:882) */}
                 <Link
                   to={`/authors/${author._id}`}
-                  className="inline-flex items-center gap-1 text-[#745939] hover:underline font-semibold text-[14px] leading-[20px] transition-colors w-fit font-sans"
+                  className="inline-flex items-center gap-1 text-[#745939] hover:underline font-semibold text-xs sm:text-[14px] leading-[20px] transition-colors w-fit font-sans"
                 >
                   <span>View Author Profile</span>
                   <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                 </Link>
 
-                {/* Author Bio (Figma #1:883 - #1:885: 14px / 22px text #1A1C1B) */}
+                {/* Author Bio (Figma #1:883 - #1:885) */}
                 {author.bio && (
-                  <p className="text-[14px] leading-[22px] text-[#1A1C1B] line-clamp-2 pt-1 font-sans">
+                  <p className="text-xs sm:text-[14px] leading-[20px] sm:leading-[22px] text-[#1A1C1B] line-clamp-2 pt-0.5 font-sans">
                     {author.bio}
                   </p>
                 )}

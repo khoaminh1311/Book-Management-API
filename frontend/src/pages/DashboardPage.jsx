@@ -93,20 +93,20 @@ export default function DashboardPage() {
   const catalogValue = books.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
 
   return (
-    <div className="p-8 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-8">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-6 sm:gap-8">
       {/* SECTION 1: EDITORIAL HEADER & METRICS SUMMARY (Figma #1:526) */}
-      <section className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <section className="flex flex-col gap-5 sm:gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-1">
               <span className="text-on-surface-variant">Dashboard</span>
               <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               <span className="text-primary font-semibold">Books</span>
             </div>
-            <h1 className="font-serif text-4xl text-primary tracking-tight font-normal">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-primary tracking-tight font-normal">
               Library Catalog
             </h1>
-            <p className="text-sm text-on-surface-variant mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-on-surface-variant mt-1 max-w-xl">
               Manage, explore, and organize volumes in your personal collection.
             </p>
           </div>
@@ -134,17 +134,17 @@ export default function DashboardPage() {
       {/* SECTION 3: BOOKS CATALOG GRID */}
       <section>
         {loading ? (
-          <div className="py-24 text-center flex flex-col items-center justify-center gap-3">
+          <div className="py-16 sm:py-24 text-center flex flex-col items-center justify-center gap-3">
             <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
             <p className="text-sm text-on-surface-variant">Loading catalog volumes...</p>
           </div>
         ) : error ? (
-          <div className="py-20 text-center flex flex-col items-center justify-center gap-3 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-8">
+          <div className="py-16 sm:py-20 text-center flex flex-col items-center justify-center gap-3 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 sm:p-8">
             <div className="w-12 h-12 rounded-full bg-error-container/60 text-error flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">cloud_off</span>
             </div>
-            <h3 className="font-serif text-xl text-primary font-medium">Unable to Connect to Server</h3>
-            <p className="text-sm text-on-surface-variant max-w-md">
+            <h3 className="font-serif text-lg sm:text-xl text-primary font-medium">Unable to Connect to Server</h3>
+            <p className="text-xs sm:text-sm text-on-surface-variant max-w-md">
               Please verify backend server is running on port 5000 (<code className="bg-surface-container px-2 py-0.5 rounded text-xs font-mono">node src/server.js</code>).
             </p>
             <button
@@ -156,10 +156,10 @@ export default function DashboardPage() {
             </button>
           </div>
         ) : books.length === 0 ? (
-          <div className="py-20 text-center flex flex-col items-center justify-center gap-3 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-8">
+          <div className="py-16 sm:py-20 text-center flex flex-col items-center justify-center gap-3 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 sm:p-8">
             <span className="material-symbols-outlined text-[48px] text-outline-variant">auto_stories</span>
-            <h3 className="font-serif text-xl text-primary font-medium">No volumes found</h3>
-            <p className="text-sm text-on-surface-variant max-w-sm">
+            <h3 className="font-serif text-lg sm:text-xl text-primary font-medium">No volumes found</h3>
+            <p className="text-xs sm:text-sm text-on-surface-variant max-w-sm">
               {search || genre !== 'All Genres'
                 ? 'Try adjusting your search query or filter.'
                 : 'Start expanding your collection by cataloging a new volume.'}
@@ -173,7 +173,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {[...books]
               .sort((a, b) => {
                 if (sortBy === 'title-asc') return (a.title || '').localeCompare(b.title || '');

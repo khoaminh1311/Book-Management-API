@@ -24,50 +24,37 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
   const isAuthorCatalog = variant === 'author';
 
   return (
-    <div className={`group relative bg-surface-container-lowest ${isAuthorCatalog ? 'rounded-xl' : 'rounded-2xl'} p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between border border-outline-variant/40`}>
-      {/* Book Cover Artwork (2:3 Ratio) - Figma #1:60 / EL-af3a1dd2 has borderRadius: 8px */}
-      <div className={`relative w-full aspect-[2/3] ${isAuthorCatalog ? 'rounded-lg' : 'rounded-xl'} overflow-hidden bg-surface-container mb-3.5`}>
-        {isAuthorCatalog ? (
-          <Link to={`/books/${book._id}`} className="block w-full h-full overflow-hidden group/cover">
-            <img
-              src={coverUrl}
-              alt={book.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover/cover:scale-105"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = DEFAULT_COVER;
-              }}
-            />
-          </Link>
-        ) : (
+    <div className={`group relative bg-surface-container-lowest ${isAuthorCatalog ? 'rounded-xl' : 'rounded-xl sm:rounded-2xl'} p-3 sm:p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between border border-outline-variant/40`}>
+      {/* Book Cover Artwork (2:3 Ratio) - Figma #1:60 / EL-af3a1dd2 */}
+      <div className={`relative w-full aspect-[2/3] ${isAuthorCatalog ? 'rounded-lg' : 'rounded-lg sm:rounded-xl'} overflow-hidden bg-surface-container mb-2.5 sm:mb-3.5`}>
+        <Link to={`/books/${book._id}`} className="block w-full h-full overflow-hidden group/cover">
           <img
             src={coverUrl}
             alt={book.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover/cover:scale-105"
             onError={(e) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = DEFAULT_COVER;
             }}
           />
-        )}
+        </Link>
 
-        {/* Top-Right Badge: Published Year on Author Detail (Figma #1:62 - #1:64), Genre on Dashboard (Figma #1:616)
-            Figma template EL-9470983c: padding 1.5px 8px, borderRadius: 4px (rounded), bg-white/90, backdrop-blur-[2px], shadow-sm */}
-        <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
+        {/* Top-Right Badge: Published Year on Author Detail (Figma #1:62 - #1:64), Genre on Dashboard (Figma #1:616) */}
+        <div className="absolute top-2 sm:top-2.5 right-2 sm:right-2.5 z-10 pointer-events-none">
           {isAuthorCatalog ? (
-            <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-[2px] text-[#091426] text-[11px] font-semibold tracking-[0.05em] shadow-sm font-sans">
+            <span className="px-1.5 sm:px-2 py-0.5 rounded bg-white/90 backdrop-blur-[2px] text-[#091426] text-[10px] sm:text-[11px] font-semibold tracking-[0.05em] shadow-sm font-sans">
               {year}
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-[2px] text-[#1A1C1B] text-[11px] font-semibold tracking-[0.05em] shadow-sm uppercase font-sans">
+            <span className="px-1.5 sm:px-2 py-0.5 rounded bg-white/90 backdrop-blur-[2px] text-[#1A1C1B] text-[10px] sm:text-[11px] font-semibold tracking-[0.05em] shadow-sm uppercase font-sans">
               {genre}
             </span>
           )}
         </div>
 
-        {/* Glassmorphism Floating Action Overlay (only on Dashboard, NOT on Author Detail) */}
+        {/* Glassmorphism Floating Action Overlay (Desktop Hover, NOT on Author Detail) */}
         {!isAuthorCatalog && (
-          <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3">
+          <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center p-3">
             <div className="flex items-center gap-1.5 p-1.5 bg-white/95 backdrop-blur-md rounded-full shadow-lg">
               <Link
                 to={`/books/${book._id}`}
@@ -100,20 +87,18 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
       </div>
 
       {/* Book Metadata (Figma #1:65 - #1:77 / EL-1519dabc) */}
-      <div className="flex flex-col gap-1.5 flex-1 justify-between">
+      <div className="flex flex-col gap-1 sm:gap-1.5 flex-1 justify-between">
         <div>
-          {/* Top Metadata Line:
-              - Author Detail (Figma #1:68 - #1:69 / EL-98571c4a): Pill with fill rgba(255, 217, 176, 0.4), text #745939, rounded-full
-              - Dashboard (Figma #1:620): Author & Year */}
+          {/* Top Metadata Line */}
           {isAuthorCatalog ? (
             <div className="mb-1">
-              <span className="inline-block px-2 py-0.5 rounded-full bg-[rgba(255,217,176,0.4)] text-[#745939] text-[11px] font-semibold tracking-[0.05em] uppercase font-sans">
+              <span className="inline-block px-1.5 sm:px-2 py-0.5 rounded-full bg-[rgba(255,217,176,0.4)] text-[#745939] text-[10px] sm:text-[11px] font-semibold tracking-[0.05em] uppercase font-sans">
                 {genre}
               </span>
             </div>
           ) : (
-            <div className="flex items-center justify-between text-[#45474C] text-[11px] font-semibold tracking-[0.05em] mb-1 font-sans">
-              <span className="truncate pr-2">
+            <div className="flex items-center justify-between text-[#45474C] text-[10px] sm:text-[11px] font-semibold tracking-[0.05em] mb-1 font-sans">
+              <span className="truncate pr-1.5">
                 {authorId ? (
                   <Link to={`/authors/${authorId}`} className="hover:text-primary hover:underline transition-colors">
                     {authorName}
@@ -126,27 +111,51 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
             </div>
           )}
 
-          {/* Monumental Title: Newsreader Medium 500 20px (Figma #1:71 / #1:623) */}
-          <h2 className="font-serif font-medium text-[20px] leading-[28px] text-primary line-clamp-1">
+          {/* Monumental Title: Newsreader Medium 500 (Figma #1:71 / #1:623) */}
+          <h2 className="font-serif font-medium text-[16px] sm:text-[20px] leading-[22px] sm:leading-[28px] text-primary line-clamp-1">
             <Link to={`/books/${book._id}`} className="hover:text-secondary transition-colors" title={book.title}>
               {book.title}
             </Link>
           </h2>
         </div>
 
-        {/* Price Row: Plus Jakarta Sans Bold 700 16px (Figma #1:74 / #1:625) + Action Arrow Icon (Figma #1:75 / EL-1448f550) */}
-        <div className="pt-2 flex items-center justify-between mt-auto">
-          <span className="font-sans font-bold text-[16px] leading-[24px] tracking-[-0.005em] text-primary">
+        {/* Price Row: Bold Price + Touch Actions for mobile / Arrow Icon for Author Catalog */}
+        <div className="pt-1.5 sm:pt-2 flex items-center justify-between mt-auto">
+          <span className="font-sans font-bold text-[14px] sm:text-[16px] leading-[20px] sm:leading-[24px] tracking-[-0.005em] text-primary">
             {priceFormatted}
           </span>
+
+          {/* Mobile Touch Actions (< md) */}
+          {!isAuthorCatalog && (
+            <div className="flex md:hidden items-center gap-0.5">
+              <Link
+                to={`/edit-book/${book._id}`}
+                className="p-1 rounded-md text-[#45474C] hover:text-primary hover:bg-surface-container transition-colors"
+                title="Edit volume"
+                aria-label="Edit volume"
+              >
+                <span className="material-symbols-outlined text-[16px] block">edit</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => onDelete(book)}
+                className="p-1 rounded-md text-error hover:bg-error-container transition-colors"
+                title="Delete volume"
+                aria-label="Delete volume"
+              >
+                <span className="material-symbols-outlined text-[16px] block">delete</span>
+              </button>
+            </div>
+          )}
+
           {isAuthorCatalog && (
             <Link
               to={`/books/${book._id}`}
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-[#091426] hover:bg-[#EFEEEC] transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center text-[#091426] hover:bg-[#EFEEEC] transition-colors"
               title="View volume details"
               aria-label="View volume details"
             >
-              <span className="material-symbols-outlined text-[20px] block leading-none">arrow_forward</span>
+              <span className="material-symbols-outlined text-[18px] sm:text-[20px] block leading-none">arrow_forward</span>
             </Link>
           )}
         </div>

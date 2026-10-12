@@ -395,9 +395,9 @@ export default function AddEditBookPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 lg:p-12 max-w-[1280px] w-full mx-auto flex flex-col gap-6 lg:gap-8">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-[1280px] w-full mx-auto flex flex-col gap-5 sm:gap-6 lg:gap-8">
       {/* Breadcrumb Navigation (Figma #1:918 - #1:925) */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#45474C] font-sans">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-[#45474C] font-sans">
         <Link to="/" className="text-[#45474C] hover:text-[#091426] transition-colors">
           Books
         </Link>
@@ -411,23 +411,23 @@ export default function AddEditBookPage() {
 
       {/* Page Title & Header Actions (Figma #1:926 - #1:931) */}
       <div className="flex flex-col gap-1">
-        <h1 className="font-serif text-[32px] leading-[40px] tracking-[-0.025em] text-[#091426] font-normal">
+        <h1 className="font-serif text-2xl sm:text-[32px] sm:leading-[40px] tracking-[-0.025em] text-[#091426] font-normal break-words">
           {isEdit ? 'Edit Book Details' : 'Add New Book to Collection'}
         </h1>
-        <p className="font-sans text-[14px] leading-[22px] text-[#45474C]">
+        <p className="font-sans text-xs sm:text-[14px] leading-[18px] sm:leading-[22px] text-[#45474C]">
           Enter bibliographic details, physical format specifics, and cataloging parameters.
         </p>
       </div>
 
       {/* Main Bento Grid: Form Fields (8 cols) + Physical Simulation (4 cols) (Figma #1:933) */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
           {/* LEFT 8 COLUMNS: FORM FIELDS (Figma #1:934) */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="lg:col-span-8 flex flex-col gap-6 sm:gap-8">
             {/* Section 1: Basic Bibliographic Information (Figma #1:935 - #1:1009) */}
-            <section className="bg-white p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-6">
+            <section className="bg-white p-5 sm:p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-5 sm:gap-6">
               {/* Card Header: Title & "REQUIRED" Badge (Figma #1:936 - #1:947) */}
-              <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#E9E8E6]">
+              <div className="flex items-center justify-between gap-3 sm:gap-4 pb-3.5 sm:pb-4 border-b border-[#E9E8E6]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-[#E9E8E6] flex items-center justify-center shrink-0">
                     <svg className="w-[19px] h-[14px] text-[#091426] fill-current" viewBox="0 0 19 14">
@@ -595,9 +595,9 @@ export default function AddEditBookPage() {
             </section>
 
             {/* Section 2: Synopsis & Rich Editorial Note (Figma #1:1002 - #1:1051) */}
-            <section className="bg-white p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-2">
+            <section className="bg-white p-5 sm:p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-2">
               {/* Header: Title & Word Count (Figma #1:1003 - #1:1014) */}
-              <div className="flex items-center justify-between gap-4 pb-6 border-b border-[#E9E8E6]">
+              <div className="flex items-center justify-between gap-3 sm:gap-4 pb-4 sm:pb-6 border-b border-[#E9E8E6]">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-[#E9E8E6] flex items-center justify-center shrink-0">
                     <svg className="w-[15px] h-[10px] text-[#091426] fill-current" viewBox="0 0 15 10">
@@ -803,11 +803,11 @@ export default function AddEditBookPage() {
           </div>
 
           {/* RIGHT 4 COLUMNS: PHYSICAL SIMULATION & CLOUDINARY UPLOAD (Figma #1:1052) */}
-          <div className="lg:col-span-4 flex flex-col gap-8">
+          <div className="lg:col-span-4 flex flex-col gap-6 sm:gap-8">
             {/* Live 3D Physical Book Simulation (Figma #1:1053 - #1:1076) */}
-            <div className="bg-white p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col items-center gap-4">
+            <div className="bg-white p-4 sm:p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col items-center gap-4">
               {/* Header: LIVE VOLUME PREVIEW & Proportion Badge (Figma #1:1054 - #1:1059) */}
-              <div className="w-full flex items-center justify-between pb-4 border-b border-[#E9E8E6]">
+              <div className="w-full flex items-center justify-between pb-3.5 sm:pb-4 border-b border-[#E9E8E6]">
                 <div className="text-[11px] font-semibold leading-[14px] tracking-[0.05em] text-[#45474C] uppercase font-sans">
                   LIVE VOLUME<br />PREVIEW
                 </div>
@@ -817,7 +817,7 @@ export default function AddEditBookPage() {
               </div>
 
               {/* Simulated 3D Physical Book Spine & Cover Mockup (Figma #1:1061 - #1:1076) */}
-              <div className="relative w-48 h-72 rounded-r-[6px] overflow-hidden shadow-2xl shadow-black/25 flex flex-col justify-between p-5 bg-[#091426] text-white">
+              <div className="relative w-44 sm:w-48 h-64 sm:h-72 rounded-r-[6px] overflow-hidden shadow-2xl shadow-black/25 flex flex-col justify-between p-4 sm:p-5 bg-[#091426] text-white">
                 {/* Background Artwork */}
                 {formData.coverImage ? (
                   <img
@@ -839,20 +839,20 @@ export default function AddEditBookPage() {
 
                 {/* Front Cover Typography Stack (Figma #1:1065 - #1:1076) */}
                 <div className="relative z-10 flex flex-col gap-1">
-                  <span className="text-[11px] font-semibold leading-[14px] tracking-[0.1em] text-white/75 uppercase font-sans">
+                  <span className="text-[10px] sm:text-[11px] font-semibold leading-[14px] tracking-[0.1em] text-white/75 uppercase font-sans">
                     ARCHIVAL EDITION
                   </span>
-                  <h3 className="font-serif font-medium text-[24px] leading-[33px] tracking-[-0.025em] text-white line-clamp-3">
+                  <h3 className="font-serif font-medium text-[20px] sm:text-[24px] leading-[28px] sm:leading-[33px] tracking-[-0.025em] text-white line-clamp-3">
                     {formData.title || 'The\nArchitecture of\nSilence'}
                   </h3>
                 </div>
 
-                <div className="relative z-10 flex flex-col gap-1.5 pt-4">
+                <div className="relative z-10 flex flex-col gap-1 sm:gap-1.5 pt-3 sm:pt-4">
                   <div className="w-6 h-[2px] bg-[#745939]" />
-                  <span className="font-sans font-medium text-[14px] leading-[22px] tracking-[0.025em] text-white truncate pt-1.5">
+                  <span className="font-sans font-medium text-xs sm:text-[14px] leading-[18px] sm:leading-[22px] tracking-[0.025em] text-white truncate pt-1">
                     {selectedAuthor ? selectedAuthor.name : 'Elena Rostova'}
                   </span>
-                  <span className="text-[11px] font-semibold leading-[14px] tracking-[0.05em] text-white/60 font-sans">
+                  <span className="text-[10px] sm:text-[11px] font-semibold leading-[14px] tracking-[0.05em] text-white/60 font-sans">
                     EST. {formData.publishedYear || '2023'} · FOLIO
                   </span>
                 </div>
@@ -860,8 +860,8 @@ export default function AddEditBookPage() {
             </div>
 
             {/* Cover Source & Drag-Drop Box (Figma #1:1078 - #1:1089) */}
-            <div className="bg-white p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-3">
-              <label htmlFor="cover-url" className="text-[14px] font-semibold leading-[20px] text-[#1A1C1B] font-sans">
+            <div className="bg-white p-4 sm:p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-3">
+              <label htmlFor="cover-url" className="text-xs sm:text-[14px] font-semibold leading-[20px] text-[#1A1C1B] font-sans">
                 Cover Asset URL
               </label>
 
@@ -912,10 +912,10 @@ export default function AddEditBookPage() {
                       <path d="M5.5 16C3.98333 16 2.6875 15.475 1.6125 14.425C0.5375 13.375 0 12.0917 0 10.575C0 9.275 0.391667 8.11667 1.175 7.1C1.95833 6.08333 2.98333 5.43333 4.25 5.15C4.66667 3.61667 5.5 2.375 6.75 1.425C8 0.475 9.41667 0 11 0C12.95 0 14.6042 0.679167 15.9625 2.0375C17.3208 3.39583 18 5.05 18 7C19.15 7.13333 20.1042 7.62917 20.8625 8.4875C21.6208 9.34583 22 10.35 22 11.5C22 12.75 21.5625 13.8125 20.6875 14.6875C19.8125 15.5625 18.75 16 17.5 16H12C11.45 16 10.9792 15.8042 10.5875 15.4125C10.1958 15.0208 10 14.55 10 14V8.85L8.4 10.4L7 9L11 5L15 9L13.6 10.4L12 8.85V14H17.5C18.2 14 18.7917 13.7583 19.275 13.275C19.7583 12.7917 20 12.2 20 11.5C20 10.8 19.7583 10.2083 19.275 9.725C18.7917 9.24167 18.2 9 17.5 9H16V7C16 5.61667 15.5125 4.4375 14.5375 3.4625C13.5625 2.4875 12.3833 2 11 2C9.61667 2 8.4375 2.4875 7.4625 3.4625C6.4875 4.4375 6 5.61667 6 7H5.5C4.53333 7 3.70833 7.34167 3.025 8.025C2.34167 8.70833 2 9.53333 2 10.5C2 11.4667 2.34167 12.2917 3.025 12.975C3.70833 13.6583 4.53333 14 5.5 14H8V16H5.5Z" />
                     </svg>
                     <div className="text-center font-sans">
-                      <p className="text-[14px] font-semibold leading-[20px] text-[#091426]">
+                      <p className="text-xs sm:text-[14px] font-semibold leading-[20px] text-[#091426]">
                         Drop image or <span className="underline text-[#745939]">browse</span>
                       </p>
-                      <p className="text-[12px] leading-[18px] text-[#45474C] mt-0.5">
+                      <p className="text-[11px] sm:text-[12px] leading-[18px] text-[#45474C] mt-0.5">
                         JPEG, PNG, WEBP
                       </p>
                     </div>
@@ -927,12 +927,12 @@ export default function AddEditBookPage() {
         </div>
 
         {/* FORM ACTION FOOTER: STATIC BAR AT BOTTOM OF FORM (Figma #1:1090 - #1:1109) */}
-        <div className="bg-white p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex items-center justify-between gap-4 flex-wrap mt-2">
+        <div className="bg-white p-4 sm:p-6 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
           {/* Left Validation Readiness Indicator (Figma #1:1092 - #1:1098) */}
           <div className="flex items-center gap-3">
             <span className="w-[10px] h-[10px] rounded-full bg-[#745939] shrink-0" />
             <div>
-              <p className="font-sans font-semibold text-[14px] leading-[20px] text-[#1A1C1B]">
+              <p className="font-sans font-semibold text-[13px] sm:text-[14px] leading-[20px] text-[#1A1C1B]">
                 Ready to Catalog
               </p>
               <p className="font-sans font-normal text-[12px] leading-[18px] text-[#45474C] hidden sm:block">
@@ -942,12 +942,12 @@ export default function AddEditBookPage() {
           </div>
 
           {/* Right Action CTAs: Cancel & Save (Figma #1:1100 - #1:1109) */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => navigate(-1)}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-lg border border-[#C5C6CD] hover:bg-[#F4F3F1] text-sm font-semibold text-[#1A1C1B] transition-colors flex items-center gap-2 font-sans cursor-pointer"
+              className="flex-1 sm:flex-initial justify-center px-4 sm:px-5 py-2.5 rounded-lg border border-[#C5C6CD] hover:bg-[#F4F3F1] text-xs sm:text-sm font-semibold text-[#1A1C1B] transition-colors flex items-center gap-2 font-sans cursor-pointer"
             >
               <svg className="w-[11px] h-[11px] text-[#1A1C1B] fill-current" viewBox="0 0 11 11">
                 <path d="M1.1 11L0 9.9L4.4 5.5L0 1.1L1.1 0L5.5 4.4L9.9 0L11 1.1L6.6 5.5L11 9.9L9.9 11L5.5 6.6L1.1 11Z" />
@@ -958,7 +958,7 @@ export default function AddEditBookPage() {
             <button
               type="submit"
               disabled={isSubmitting || uploadingCover}
-              className="px-6 py-2.5 rounded-lg bg-[#091426] hover:bg-[#091426]/90 text-white text-sm font-semibold shadow-sm transition-colors flex items-center gap-2 font-sans disabled:opacity-50 cursor-pointer"
+              className="flex-1 sm:flex-initial justify-center px-5 sm:px-6 py-2.5 rounded-lg bg-[#091426] hover:bg-[#091426]/90 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors flex items-center gap-2 font-sans disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <>
