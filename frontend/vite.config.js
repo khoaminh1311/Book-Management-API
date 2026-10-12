@@ -5,10 +5,5 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: {
-      '/books': 'http://localhost:5000',
-      '/authors': 'http://localhost:5000',
-      '/upload': 'http://localhost:5000',
-    },
   },
 });
