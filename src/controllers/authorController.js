@@ -4,12 +4,49 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { AppError } from '../utils/errors.js';
 import { filterAllowedFields } from '../utils/helpers.js';
 
+const escapeRegex = (text) => {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
 // GET /authors
 export const getAuthors = asyncHandler(async (req, res, next) => {
   const { validPage, validLimit, startIndex } = req.pagination;
+  const query = {};
 
-  const total = await Author.countDocuments();
-  const authors = await Author.find().skip(startIndex).limit(validLimit);
+  if (req.query.search) {
+    if (typeof req.query.search !== 'string') {
+      return next(new AppError('Search parameter must be a single string', 400));
+    }
+    const safeSearch = escapeRegex(req.query.search);
+    query.name = { $regex: safeSearch, $options: 'i' };
+  }
+
+  let sortOption = { createdAt: -1 };
+  if (req.query.sort) {
+    switch (req.query.sort) {
+      case 'name-asc':
+        sortOption = { name: 1 };
+        break;
+      case 'name-desc':
+        sortOption = { name: -1 };
+        break;
+      case 'year-asc':
+        sortOption = { birthYear: 1 };
+        break;
+      case 'year-desc':
+        sortOption = { birthYear: -1 };
+        break;
+      case 'recent':
+      default:
+        sortOption = { createdAt: -1 };
+        break;
+    }
+  }
+
+  const [total, authors] = await Promise.all([
+    Author.countDocuments(query),
+    Author.find(query).sort(sortOption).skip(startIndex).limit(validLimit)
+  ]);
 
   res.status(200).json({
     data: authors,
@@ -24,7 +61,7 @@ export const getAuthors = asyncHandler(async (req, res, next) => {
 
 // GET /authors/:id
 export const getAuthor = asyncHandler(async (req, res, next) => {
-  const books = await Book.find({ author: req.params.id });
+  const books = await Book.find({ author: req.params.id }).sort({ createdAt: -1 });
 
   const authorData = req.document.toObject();
 

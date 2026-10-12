@@ -84,6 +84,7 @@ export default function Pagination({ page = 1, totalPages = 1, total = 0, limit 
                     : 'text-[#45474C] hover:bg-surface-container hover:text-primary'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
+                aria-label={isActive ? `Page ${p}, current page` : `Go to page ${p}`}
               >
                 {p}
               </button>

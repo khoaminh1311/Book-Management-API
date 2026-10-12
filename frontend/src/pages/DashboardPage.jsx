@@ -6,12 +6,14 @@ import MetricsGrid from '../components/books/MetricsGrid';
 import SearchFilterBar from '../components/books/SearchFilterBar';
 import BookCard from '../components/books/BookCard';
 import Pagination from '../components/common/Pagination';
+import { GENRE_OPTIONS } from '../utils/constants';
 
 export default function DashboardPage() {
   const { showToast, confirmAction } = useToast();
 
   const [books, setBooks] = useState([]);
   const [totalAuthors, setTotalAuthors] = useState(0);
+  const [totalCatalogValue, setTotalCatalogValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -22,7 +24,7 @@ export default function DashboardPage() {
   const limit = 8;
   const [pagination, setPagination] = useState({ page: 1, limit: 8, total: 0, totalPages: 1 });
 
-  const fetchCatalogData = useCallback(async (targetPage = page, searchQuery = search, genreFilter = genre) => {
+  const fetchCatalogData = useCallback(async (targetPage = 1, searchQuery = '', genreFilter = '', sortOption = 'recent') => {
     setLoading(true);
     setError(null);
 
@@ -33,6 +35,7 @@ export default function DashboardPage() {
           limit,
           genre: genreFilter === 'All Genres' ? '' : genreFilter,
           search: searchQuery,
+          sort: sortOption,
         }),
         api.getAuthors({ page: 1, limit: 1 }).catch(() => null),
       ]);
@@ -41,6 +44,9 @@ export default function DashboardPage() {
       setBooks(fetchedBooks);
       if (bookRes?.pagination) {
         setPagination(bookRes.pagination);
+      }
+      if (bookRes?.totalCatalogValue !== undefined) {
+        setTotalCatalogValue(bookRes.totalCatalogValue);
       }
       if (authorRes?.pagination?.total !== undefined) {
         setTotalAuthors(authorRes.pagination.total);
@@ -52,21 +58,21 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, genre, limit, showToast]);
+  }, [limit, showToast]);
 
-  // Debounced Search & Filter effect
+  // Debounced Search, Filter & Sort effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
-      fetchCatalogData(1, search, genre);
+      fetchCatalogData(1, search, genre, sortBy);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [search, genre]);
+  }, [search, genre, sortBy, fetchCatalogData]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    fetchCatalogData(newPage, search, genre);
+    fetchCatalogData(newPage, search, genre, sortBy);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -83,14 +89,23 @@ export default function DashboardPage() {
       try {
         await api.deleteBook(book._id);
         showToast(`"${book.title}" deleted successfully`, 'success');
-        fetchCatalogData(page, search, genre);
+
+        // If last item on page > 1, retreat to previous page
+        const isLastItemOnPage = books.length === 1 && page > 1;
+        const targetPage = isLastItemOnPage ? page - 1 : page;
+        if (isLastItemOnPage) {
+          setPage(targetPage);
+        }
+        fetchCatalogData(targetPage, search, genre, sortBy);
       } catch (err) {
         showToast(err.message || 'Failed to delete volume', 'error');
       }
     }
   };
 
-  const catalogValue = books.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
+  const catalogValue = totalCatalogValue !== undefined
+    ? totalCatalogValue
+    : books.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-6 sm:gap-8">
@@ -116,7 +131,7 @@ export default function DashboardPage() {
         <MetricsGrid
           totalTitles={pagination.total}
           totalAuthors={totalAuthors}
-          totalGenres={6}
+          totalGenres={GENRE_OPTIONS.length}
           totalValue={catalogValue}
         />
       </section>
@@ -145,11 +160,11 @@ export default function DashboardPage() {
             </div>
             <h3 className="font-serif text-lg sm:text-xl text-primary font-medium">Unable to Connect to Server</h3>
             <p className="text-xs sm:text-sm text-on-surface-variant max-w-md">
-              Please verify backend server is running on port 5000 (<code className="bg-surface-container px-2 py-0.5 rounded text-xs font-mono">node src/server.js</code>).
+              Please verify the backend server is running and accessible on port 5000.
             </p>
             <button
               type="button"
-              onClick={() => fetchCatalogData(1, search, genre)}
+              onClick={() => fetchCatalogData(1, search, genre, sortBy)}
               className="mt-2 px-5 py-2 bg-primary text-on-primary rounded-xl text-xs font-semibold hover:bg-primary-container transition-colors"
             >
               Retry Connection
@@ -174,18 +189,9 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
-            {[...books]
-              .sort((a, b) => {
-                if (sortBy === 'title-asc') return (a.title || '').localeCompare(b.title || '');
-                if (sortBy === 'title-desc') return (b.title || '').localeCompare(a.title || '');
-                if (sortBy === 'price-asc') return (Number(a.price) || 0) - (Number(b.price) || 0);
-                if (sortBy === 'price-desc') return (Number(b.price) || 0) - (Number(a.price) || 0);
-                if (sortBy === 'year-desc') return (Number(b.publishedYear) || 0) - (Number(a.publishedYear) || 0);
-                return 0;
-              })
-              .map((book) => (
-                <BookCard key={book._id} book={book} onDelete={handleDeleteBook} />
-              ))}
+            {books.map((book) => (
+              <BookCard key={book._id} book={book} onDelete={handleDeleteBook} />
+            ))}
           </div>
         )}
 

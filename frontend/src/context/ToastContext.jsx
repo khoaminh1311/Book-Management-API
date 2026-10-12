@@ -1,24 +1,39 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 
 const ToastContext = createContext(null);
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const [modalConfig, setModalConfig] = useState(null);
+  const timeoutIdsRef = useRef(new Map());
 
-  const showToast = useCallback((message, type = 'info', duration = 3500) => {
-    const id = Date.now() + Math.random().toString(36).substring(2, 9);
-    setToasts(prev => [...prev, { id, message, type }]);
-
-    if (duration > 0) {
-      setTimeout(() => {
-        setToasts(prev => prev.filter(t => t.id !== id));
-      }, duration);
-    }
+  // Cleanup all pending timeouts on unmount
+  useEffect(() => {
+    return () => {
+      timeoutIdsRef.current.forEach(timerId => clearTimeout(timerId));
+      timeoutIdsRef.current.clear();
+    };
   }, []);
 
   const removeToast = useCallback((id) => {
+    if (timeoutIdsRef.current.has(id)) {
+      clearTimeout(timeoutIdsRef.current.get(id));
+      timeoutIdsRef.current.delete(id);
+    }
     setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  const showToast = useCallback((message, type = 'info', duration = 3500) => {
+    const id = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    setToasts(prev => [...prev, { id, message, type }]);
+
+    if (duration > 0) {
+      const timerId = setTimeout(() => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+        timeoutIdsRef.current.delete(id);
+      }, duration);
+      timeoutIdsRef.current.set(id, timerId);
+    }
   }, []);
 
   const confirmAction = useCallback(({
