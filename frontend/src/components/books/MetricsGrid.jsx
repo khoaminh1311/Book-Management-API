@@ -33,25 +33,31 @@ export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, to
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
       {metrics.map((m, idx) => (
         <div
           key={idx}
-          className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col justify-between"
+          className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col justify-between"
         >
           {/* Header Row: Label & Bronze Icon */}
-          <div className="flex items-center justify-between text-[#45474C]">
-            <span className="text-[11px] font-semibold leading-[14px] tracking-[0.05em] uppercase">
+          <div className="flex items-center justify-between text-[#45474C] gap-1">
+            <span className="text-[10px] sm:text-[11px] font-semibold leading-[13px] sm:leading-[14px] tracking-[0.05em] uppercase truncate">
               {m.label}
             </span>
-            <span className="material-symbols-outlined text-[18px] text-[#745939]">
-              {m.icon}
-            </span>
+            {m.label === 'TOTAL CATALOG VALUE' ? (
+              <span className="material-symbols-outlined text-secondary text-[20px]">
+                attach_money
+              </span>
+            ) : (
+              <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-[#745939] shrink-0">
+                {m.icon}
+              </span>
+            )}
           </div>
 
-          {/* Value: Newsreader Regular (400) 24px/32px -0.01em */}
-          <div className="pt-3">
-            <span className="font-serif font-normal text-[24px] leading-8 tracking-[-0.01em] text-primary block">
+          {/* Value: Newsreader Regular (400) 20px-24px */}
+          <div className="pt-2 sm:pt-3">
+            <span className="font-serif font-normal text-[19px] sm:text-[24px] leading-7 sm:leading-8 tracking-[-0.01em] text-primary block truncate">
               {m.value}
             </span>
           </div>

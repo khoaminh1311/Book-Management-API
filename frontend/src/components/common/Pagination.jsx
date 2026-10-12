@@ -35,9 +35,9 @@ export default function Pagination({ page = 1, totalPages = 1, total = 0, limit 
   const pages = getPages();
 
   return (
-    <div className="mt-8 bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="mt-6 sm:mt-8 bg-surface-container-lowest rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border border-outline-variant/40 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
       {/* Left: Entries Counter (Figma #1:749) */}
-      <div className="text-[12px] leading-[18px] text-[#45474C] font-sans">
+      <div className="text-[11px] sm:text-[12px] leading-[16px] sm:leading-[18px] text-[#45474C] font-sans text-center sm:text-left">
         Showing <span className="font-semibold text-primary">{start}</span> to{' '}
         <span className="font-semibold text-primary">{end}</span> of{' '}
         <span className="font-semibold text-primary">{safeTotal.toLocaleString()}</span> entries
@@ -56,33 +56,40 @@ export default function Pagination({ page = 1, totalPages = 1, total = 0, limit 
           <span className="material-symbols-outlined text-[18px]">chevron_left</span>
         </button>
 
-        {/* Page Buttons */}
-        {pages.map((p, idx) => {
-          if (p === '...') {
-            return (
-              <div key={`ellipsis-${idx}`} className="px-1 text-[12px] text-[#75777D] select-none">
-                ...
-              </div>
-            );
-          }
+        {/* Mobile-only compact Page indicator (< sm) */}
+        <span className="sm:hidden text-xs font-semibold px-2 text-primary font-sans">
+          Page {safePage} / {safeTotalPages}
+        </span>
 
-          const isActive = p === safePage;
-          return (
-            <button
-              key={`page-${p}`}
-              type="button"
-              onClick={() => onPageChange && onPageChange(p)}
-              className={`w-8 h-8 rounded-lg text-[12px] font-semibold tracking-[0.04em] flex items-center justify-center transition-all ${
-                isActive
-                  ? 'bg-primary text-white shadow-sm font-bold'
-                  : 'text-[#45474C] hover:bg-surface-container hover:text-primary'
-              }`}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {p}
-            </button>
-          );
-        })}
+        {/* Desktop-only individual Page Buttons (>= sm) */}
+        <div className="hidden sm:flex items-center gap-1.5">
+          {pages.map((p, idx) => {
+            if (p === '...') {
+              return (
+                <div key={`ellipsis-${idx}`} className="px-1 text-[12px] text-[#75777D] select-none">
+                  ...
+                </div>
+              );
+            }
+
+            const isActive = p === safePage;
+            return (
+              <button
+                key={`page-${p}`}
+                type="button"
+                onClick={() => onPageChange && onPageChange(p)}
+                className={`w-8 h-8 rounded-lg text-[12px] font-semibold tracking-[0.04em] flex items-center justify-center transition-all ${
+                  isActive
+                    ? 'bg-primary text-white shadow-sm font-bold'
+                    : 'text-[#45474C] hover:bg-surface-container hover:text-primary'
+                }`}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {p}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Next Page Button (Figma #1:766) */}
         <button

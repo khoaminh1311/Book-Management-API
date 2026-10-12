@@ -40,7 +40,7 @@ export default function SearchFilterBar({
   ];
 
   return (
-    <section className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/40 shadow-sm flex flex-col md:flex-row items-center gap-3">
+    <section className="bg-surface-container-lowest p-3 sm:p-4 rounded-2xl border border-outline-variant/40 shadow-sm flex flex-col md:flex-row items-center gap-2.5 sm:gap-3">
       {/* Live Search Input (#1:579) */}
       <div className="relative flex-1 w-full">
         <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
@@ -55,13 +55,14 @@ export default function SearchFilterBar({
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+      {/* Filter and Sort Dropdowns: 2 columns on mobile, horizontal row on md+ */}
+      <div className="grid grid-cols-2 gap-2.5 w-full md:flex md:w-auto md:items-center md:gap-3">
         {/* Genre Filter Dropdown (#1:586) */}
-        <div className="relative w-full sm:w-auto shrink-0">
+        <div className="relative w-full md:w-44 shrink-0">
           <select
             value={genre}
             onChange={(e) => onGenreChange(e.target.value)}
-            className="w-full sm:w-44 appearance-none pl-4 pr-10 py-2.5 rounded-xl bg-surface border border-outline-variant/60 text-sm text-[#1A1C1B] font-sans focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+            className="w-full md:w-44 appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-2.5 rounded-xl bg-surface border border-outline-variant/60 text-xs sm:text-sm text-[#1A1C1B] font-sans focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer truncate"
           >
             {genres.map((g) => (
               <option key={g} value={g}>
@@ -69,17 +70,17 @@ export default function SearchFilterBar({
               </option>
             ))}
           </select>
-          <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-[#75777D]">
+          <span className="material-symbols-outlined pointer-events-none absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-[18px] text-[#75777D]">
             expand_more
           </span>
         </div>
 
         {/* Sort by Dropdown (#1:592) */}
-        <div className="relative w-full sm:w-auto shrink-0">
+        <div className="relative w-full md:w-56 shrink-0">
           <select
             value={sortBy}
             onChange={(e) => onSortChange && onSortChange(e.target.value)}
-            className="w-full sm:w-56 appearance-none pl-4 pr-10 py-2.5 rounded-xl bg-surface border border-outline-variant/60 text-sm text-[#1A1C1B] font-sans focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+            className="w-full md:w-56 appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-2.5 rounded-xl bg-surface border border-outline-variant/60 text-xs sm:text-sm text-[#1A1C1B] font-sans focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer truncate"
           >
             {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -87,7 +88,7 @@ export default function SearchFilterBar({
               </option>
             ))}
           </select>
-          <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-[#75777D]">
+          <span className="material-symbols-outlined pointer-events-none absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-[18px] text-[#75777D]">
             unfold_more
           </span>
         </div>

@@ -143,27 +143,27 @@ export default function AddEditAuthorPage() {
   }
 
   return (
-    <div className="p-8 lg:p-12 max-w-[1280px] w-full mx-auto flex flex-col">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-[1280px] w-full mx-auto flex flex-col gap-5 sm:gap-6 lg:gap-8">
       {/* 1. Breadcrumbs & Status Ribbon (Figma #1:1142 - #1:1149) */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#45474C] mb-6 font-sans">
-        <Link to="/authors" className="hover:text-primary transition-colors text-xs text-[#45474C]">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-[#45474C] font-sans">
+        <Link to="/authors" className="hover:text-primary transition-colors text-xs sm:text-sm text-[#45474C]">
           Authors
         </Link>
         <svg className="w-[5px] h-[7px] text-[#C5C6CD] fill-current" viewBox="0 0 5 7">
           <path d="M1.16667 7L0 5.83333L2.33333 3.5L0 1.16667L1.16667 0L4.66667 3.5L1.16667 7Z" />
         </svg>
-        <span className="text-primary font-medium text-xs">
+        <span className="text-primary font-medium text-xs sm:text-sm">
           {isEdit ? 'Edit Author' : 'Add New Author'}
         </span>
       </nav>
 
       {/* 2. Editorial Header Banner (Figma #1:1150 - #1:1156) */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="font-serif text-[32px] leading-[40px] tracking-[-0.8px] text-[#091426]">
+          <h1 className="font-serif text-2xl sm:text-[32px] leading-[32px] sm:leading-[40px] tracking-[-0.8px] text-[#091426] break-words">
             {isEdit ? 'Edit Author Profile' : 'Add New Author'}
           </h1>
-          <p className="text-sm text-[#45474C] mt-1.5 font-sans">
+          <p className="text-xs sm:text-sm text-[#45474C] mt-1 sm:mt-1.5 font-sans max-w-2xl">
             Enter author biography and details to link with catalog volumes, reading metrics, and editorial archives.
           </p>
         </div>
@@ -174,15 +174,15 @@ export default function AddEditAuthorPage() {
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="w-full max-w-[672px] bg-white p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-7"
+          className="w-full max-w-[672px] bg-white p-5 sm:p-8 rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col gap-6 sm:gap-7"
         >
           {/* Field 1: Author Full Name (Figma #1:1158 - #1:1169) */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5 sm:gap-2">
             <div className="flex items-center justify-between text-sm font-sans">
-              <label htmlFor="author-name" className="font-semibold text-[14px] leading-[20px] text-[#1A1C1B]">
+              <label htmlFor="author-name" className="font-semibold text-xs sm:text-[14px] leading-[20px] text-[#1A1C1B]">
                 Author Full Name <span className="text-[#BA1A1A] font-normal">*</span>
               </label>
-              <span className="font-semibold text-[11px] leading-[14px] tracking-[0.05em] text-[#45474C]">
+              <span className="font-semibold text-[10px] sm:text-[11px] leading-[14px] tracking-[0.05em] text-[#45474C]">
                 {formData.name.length} / 100
               </span>
             </div>
@@ -212,14 +212,14 @@ export default function AddEditAuthorPage() {
           </div>
 
           {/* Fields 2 & 3: Nationality & Birth Year (Figma #1:1170 - #1:1196) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             {/* Nationality */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5 sm:gap-2">
               <div className="flex items-center justify-between">
-                <label htmlFor="author-nationality" className="font-semibold text-[14px] leading-[20px] text-[#1A1C1B] font-sans">
+                <label htmlFor="author-nationality" className="font-semibold text-xs sm:text-[14px] leading-[20px] text-[#1A1C1B] font-sans">
                   Nationality
                 </label>
-                <span className="font-label-sm text-label-sm text-[#45474C] uppercase tracking-wider font-sans">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-[#45474C] uppercase tracking-wider font-sans">
                   DEMONYM
                 </span>
               </div>
@@ -243,12 +243,12 @@ export default function AddEditAuthorPage() {
             </div>
 
             {/* Birth Year */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5 sm:gap-2">
               <div className="flex items-center justify-between">
-                <label htmlFor="author-birthyear" className="font-semibold text-[14px] leading-[20px] text-[#1A1C1B] font-sans">
+                <label htmlFor="author-birthyear" className="font-semibold text-xs sm:text-[14px] leading-[20px] text-[#1A1C1B] font-sans">
                   Birth Year
                 </label>
-                <span className="font-label-sm text-label-sm text-[#45474C] uppercase tracking-wider font-sans">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-[#45474C] uppercase tracking-wider font-sans">
                   CHRONOLOGY
                 </span>
               </div>
@@ -280,12 +280,12 @@ export default function AddEditAuthorPage() {
           </div>
 
           {/* Field 4: Biography / Bio (Figma #1:1197 - #1:1205) */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5 sm:gap-2">
             <div className="flex items-center justify-between text-sm font-sans">
-              <label htmlFor="author-bio" className="font-semibold text-[14px] leading-[20px] text-[#1A1C1B]">
+              <label htmlFor="author-bio" className="font-semibold text-xs sm:text-[14px] leading-[20px] text-[#1A1C1B]">
                 Biography / Bio <span className="text-[#BA1A1A] font-normal">*</span>
               </label>
-              <span className="font-semibold text-[11px] leading-[14px] tracking-[0.05em] text-[#45474C]">
+              <span className="font-semibold text-[10px] sm:text-[11px] leading-[14px] tracking-[0.05em] text-[#45474C]">
                 {formData.bio.length} / 2000 chars
               </span>
             </div>
@@ -298,9 +298,9 @@ export default function AddEditAuthorPage() {
               value={formData.bio}
               onChange={handleChange}
               placeholder="Elena Rostova is a contemporary novelist and essayist known for her contemplative prose style and exploration of displaced identities across Nordic and Mediterranean landscapes. Her work bridges post-war architectural history with intimate interior drama, earning widespread literary recognition and international translation."
-              className={`w-full p-4 rounded-lg bg-[#F4F3F1] border ${
+              className={`w-full p-3.5 sm:p-4 rounded-lg bg-[#F4F3F1] border ${
                 formErrors.bio ? 'border-error ring-1 ring-error' : 'border-transparent'
-              } text-sm text-[#1A1C1B] placeholder:text-[#45474C]/50 focus:outline-none focus:ring-2 focus:ring-[#091426]/20 transition-all font-sans leading-relaxed resize-y min-h-[140px]`}
+              } text-xs sm:text-sm text-[#1A1C1B] placeholder:text-[#45474C]/50 focus:outline-none focus:ring-2 focus:ring-[#091426]/20 transition-all font-sans leading-relaxed resize-y min-h-[120px] sm:min-h-[140px]`}
             />
             {formErrors.bio && (
               <p className="text-xs text-error font-sans mt-0.5">{formErrors.bio}</p>
@@ -308,12 +308,12 @@ export default function AddEditAuthorPage() {
           </div>
 
           {/* Form Action Footer (Figma #1:1206 - #1:1218) */}
-          <div className="flex items-center justify-between pt-4 border-t border-[#E9E8E6] mt-1">
+          <div className="flex items-center gap-2.5 sm:gap-3 pt-4 border-t border-[#E9E8E6] mt-1 w-full justify-between">
             <button
               type="button"
               onClick={() => navigate(-1)}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-lg border border-[#C5C6CD] hover:bg-[#F4F3F1] text-sm font-semibold text-[#1A1C1B] transition-colors flex items-center gap-2 font-sans cursor-pointer disabled:opacity-50"
+              className="flex-1 sm:flex-initial justify-center px-4 sm:px-5 py-2.5 rounded-lg border border-[#C5C6CD] hover:bg-[#F4F3F1] text-xs sm:text-sm font-semibold text-[#1A1C1B] transition-colors flex items-center gap-2 font-sans cursor-pointer disabled:opacity-50"
             >
               <svg className="w-[11px] h-[11px] text-[#1A1C1B] fill-current" viewBox="0 0 11 11">
                 <path d="M1.1 11L0 9.9L4.4 5.5L0 1.1L1.1 0L5.5 4.4L9.9 0L11 1.1L6.6 5.5L11 9.9L9.9 11L5.5 6.6L1.1 11Z" />
@@ -324,7 +324,7 @@ export default function AddEditAuthorPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-lg bg-[#091426] hover:bg-[#091426]/90 text-white text-sm font-semibold shadow-sm transition-colors flex items-center gap-2 font-sans disabled:opacity-50 cursor-pointer"
+              className="flex-1 sm:flex-initial justify-center px-5 sm:px-6 py-2.5 rounded-lg bg-[#091426] hover:bg-[#091426]/90 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors flex items-center gap-2 font-sans disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <>

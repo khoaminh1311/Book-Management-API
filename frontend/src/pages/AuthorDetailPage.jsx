@@ -134,49 +134,49 @@ export default function AuthorDetailPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 lg:p-12 max-w-7xl w-full mx-auto flex flex-col gap-6 lg:gap-8">
+    <div className="p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-5 sm:gap-6 lg:gap-8">
       {/* Top Breadcrumb Nav (Figma #1:5 - #1:11) */}
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#45474C] font-sans">
-        <Link to="/authors" className="text-[#45474C] hover:text-primary transition-colors">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-[#45474C] font-sans">
+        <Link to="/authors" className="text-[#45474C] hover:text-primary transition-colors shrink-0">
           Authors
         </Link>
-        <span className="material-symbols-outlined text-[14px] text-[#75777D]">chevron_right</span>
-        <span className="font-medium text-[#1A1C1B] truncate max-w-md">{author.name}</span>
+        <span className="material-symbols-outlined text-[14px] text-[#75777D] shrink-0">chevron_right</span>
+        <span className="font-medium text-[#1A1C1B] truncate max-w-[200px] sm:max-w-md">{author.name}</span>
       </nav>
 
       {/* Section 2: Author Profile Card (Figma #1:12 - #1:44) */}
-      <section className="bg-surface-container-lowest p-6 sm:p-10 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col gap-6">
+      <section className="bg-surface-container-lowest p-4 sm:p-6 lg:p-10 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col gap-5 sm:gap-6">
         {/* Header Row: Avatar, Name & Quick Actions (Figma #1:14 - #1:30) */}
-        <div className="flex items-center justify-between gap-4 flex-wrap pb-6 border-b border-[#E9E8E6]">
-          {/* Avatar & Author Name (Figma #1:15 - #1:19: gap 16px) */}
-          <div className="flex items-center gap-4">
-            {/* Avatar Circle (Figma #1:16 - #1:17: fixed 48x48px, fills #EFEEEC, no border, Newsreader Bold 20px) */}
-            <div className="w-12 h-12 rounded-full bg-[#EFEEEC] flex items-center justify-center font-serif text-[20px] font-bold text-primary shrink-0 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 sm:pb-6 border-b border-[#E9E8E6]">
+          {/* Avatar & Author Name (Figma #1:15 - #1:19) */}
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            {/* Avatar Circle (Figma #1:16 - #1:17) */}
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#EFEEEC] flex items-center justify-center font-serif text-[18px] sm:text-[20px] font-bold text-primary shrink-0 shadow-sm">
               {getInitials(author.name)}
             </div>
 
-            {/* Author Title (Figma #1:18 - #1:19: Newsreader Regular 32px / 40px -0.025em text #091426) */}
-            <h1 className="font-serif text-2xl sm:text-[32px] sm:leading-[40px] tracking-[-0.025em] font-normal text-primary">
+            {/* Author Title (Figma #1:18 - #1:19) */}
+            <h1 className="font-serif text-2xl sm:text-[32px] sm:leading-[40px] tracking-[-0.025em] font-normal text-primary break-words">
               {author.name}
             </h1>
           </div>
 
-          {/* Quick Actions (Figma #1:20 - #1:30: style_b29ee016 font 14px / 20px) */}
-          <div className="flex items-center gap-2.5">
-            {/* Edit Profile Button (Figma #1:21 - #1:25: fills #EFEEEC, text #1A1C1B, text-sm leading-[20px]) */}
+          {/* Quick Actions (Figma #1:20 - #1:30) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            {/* Edit Profile Button (Figma #1:21 - #1:25) */}
             <Link
               to={`/edit-author/${author._id}`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#EFEEEC] hover:bg-[#E9E8E6] text-[#1A1C1B] font-semibold text-sm leading-[20px] transition-colors shadow-sm font-sans"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#EFEEEC] hover:bg-[#E9E8E6] text-[#1A1C1B] font-semibold text-xs sm:text-sm leading-[20px] transition-colors shadow-sm font-sans"
             >
               <span className="material-symbols-outlined text-[16px]">edit</span>
               <span>Edit Profile</span>
             </Link>
 
-            {/* Delete Author Button (Figma #1:26 - #1:30: fills rgba(255, 218, 214, 0.6), text #BA1A1A, text-sm leading-[20px]) */}
+            {/* Delete Author Button (Figma #1:26 - #1:30) */}
             <button
               type="button"
               onClick={() => setShowDeleteAuthorModal(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FFDAD6]/60 hover:bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-sm leading-[20px] transition-colors shadow-sm font-sans"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FFDAD6]/60 hover:bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm leading-[20px] transition-colors shadow-sm font-sans"
             >
               <span className="material-symbols-outlined text-[16px]">delete</span>
               <span>Delete Author</span>
@@ -186,15 +186,15 @@ export default function AuthorDetailPage() {
 
         {/* Demographic Badges Row (Figma #1:31 - #1:39) */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Nationality Badge (Figma #1:32 - #1:35: rounded-full 9999px, bg #F4F3F1) */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#45474C] text-xs font-semibold font-sans">
-            <span className="material-symbols-outlined text-[15px] text-[#75777D]">public</span>
+          {/* Nationality Badge (Figma #1:32 - #1:35) */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#45474C] text-[11px] sm:text-xs font-semibold font-sans">
+            <span className="material-symbols-outlined text-[14px] sm:text-[15px] text-[#75777D]">public</span>
             <span>{author.nationality || 'Nationality Not Specified'}</span>
           </div>
 
-          {/* Birth Year Badge (Figma #1:36 - #1:39: rounded-full 9999px, bg #F4F3F1) */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#45474C] text-xs font-semibold font-sans">
-            <span className="material-symbols-outlined text-[15px] text-[#75777D]">calendar_today</span>
+          {/* Birth Year Badge (Figma #1:36 - #1:39) */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#45474C] text-[11px] sm:text-xs font-semibold font-sans">
+            <span className="material-symbols-outlined text-[14px] sm:text-[15px] text-[#75777D]">calendar_today</span>
             <span>{author.birthYear ? `Born ${author.birthYear}` : 'Birth Year Unknown'}</span>
           </div>
         </div>
@@ -204,20 +204,20 @@ export default function AuthorDetailPage() {
           <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#745939] font-sans">
             BIOGRAPHY
           </h2>
-          {/* Bio text: style_f40bcfd3 -> Plus Jakarta Sans Regular 16px / 26px */}
-          <p className="text-[16px] leading-[26px] text-[#45474C] font-sans whitespace-pre-line max-w-5xl">
+          {/* Bio text */}
+          <p className="text-sm sm:text-[16px] leading-[22px] sm:leading-[26px] text-[#45474C] font-sans whitespace-pre-line max-w-5xl break-words">
             {author.bio || 'No curatorial biography has been recorded for this author.'}
           </p>
         </div>
       </section>
 
       {/* Section 3: "Books by this Author" Catalog Section (Figma #1:45 - #1:137) */}
-      <section className="flex flex-col gap-6">
+      <section className="flex flex-col gap-5 sm:gap-6">
         {/* Section Header Bar with Title & CTA (Figma #1:46 - #1:56) */}
-        <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
-          {/* Header & Books Count Pill (Figma #1:47 - #1:51: gap-4 / 16px, rounded-full 9999px) */}
-          <div className="flex items-center gap-4">
-            <h2 className="font-serif font-medium text-[24px] leading-[32px] tracking-[-0.025em] text-primary">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pt-1 sm:pt-2">
+          {/* Header & Books Count Pill (Figma #1:47 - #1:51) */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <h2 className="font-serif font-medium text-xl sm:text-[24px] leading-7 sm:leading-[32px] tracking-[-0.025em] text-primary">
               Books by {author.name}
             </h2>
             <span className="px-2.5 py-0.5 rounded-full bg-[#E9E8E6] text-[#1A1C1B] text-xs font-semibold font-sans">
@@ -225,10 +225,10 @@ export default function AuthorDetailPage() {
             </span>
           </div>
 
-          {/* Add Book CTA (Figma #1:52 - #1:56: bg #091426, text white, rounded 8px, text-sm leading-[20px] font-semibold) */}
+          {/* Add Book CTA (Figma #1:52 - #1:56) */}
           <Link
             to={`/add-book?author=${author._id}`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#091426] text-white hover:bg-[#091426]/90 transition-colors text-sm leading-[20px] font-semibold shadow-sm font-sans"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-lg bg-[#091426] text-white hover:bg-[#091426]/90 transition-colors text-xs sm:text-sm leading-[20px] font-semibold shadow-sm font-sans self-start sm:self-auto"
           >
             <span className="material-symbols-outlined text-[16px]">add</span>
             <span>Add Book</span>
@@ -237,7 +237,7 @@ export default function AuthorDetailPage() {
 
         {/* Books Grid Container (Figma #1:57 - #1:137) */}
         {books.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {books.map((book) => (
               <BookCard
                 key={book._id}
