@@ -3,13 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import BookCard from '../components/books/BookCard';
-
-function getInitials(name = '') {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
+import { getInitials, getAvatarColor } from '../utils/helpers';
 
 /**
  * Screen 4: AuthorDetailPage (Author Profile & Associated Bibliography)
@@ -28,20 +22,12 @@ function getInitials(name = '') {
 export default function AuthorDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showToast, confirmAction } = useToast();
 
   const [author, setAuthor] = useState(null);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Author Deletion Modal State
-  const [showDeleteAuthorModal, setShowDeleteAuthorModal] = useState(false);
-  const [deletingAuthor, setDeletingAuthor] = useState(false);
-
-  // Book Deletion Modal State
-  const [bookToDelete, setBookToDelete] = useState(null);
-  const [deletingBook, setDeletingBook] = useState(false);
 
   useEffect(() => {
     async function fetchAuthorDetail() {
@@ -72,11 +58,24 @@ export default function AuthorDetailPage() {
   const handleDeleteAuthor = async () => {
     if (!author) return;
     if (books.length > 0) {
-      showToast('Cannot delete author while they have cataloged volumes.', 'error');
+      showToast(
+        `Cannot delete ${author.name} because they have ${books.length} cataloged book${books.length > 1 ? 's' : ''}. Please remove or reassign their books first.`,
+        'warning',
+        5000
+      );
       return;
     }
 
-    setDeletingAuthor(true);
+    const confirmed = await confirmAction({
+      title: 'Delete Author',
+      message: `Are you sure you want to permanently delete author "${author.name}" from the library catalog? This action cannot be undone.`,
+      confirmText: 'Delete Record',
+      cancelText: 'Cancel',
+      isDangerous: true,
+    });
+
+    if (!confirmed) return;
+
     try {
       await api.deleteAuthor(author._id);
       showToast(`Author "${author.name}" was removed from the catalog.`, 'success');
@@ -84,24 +83,28 @@ export default function AuthorDetailPage() {
     } catch (err) {
       console.error('Error deleting author:', err);
       showToast(err.message || 'Failed to delete author', 'error');
-    } finally {
-      setDeletingAuthor(false);
     }
   };
 
-  const handleDeleteBook = async () => {
-    if (!bookToDelete) return;
-    setDeletingBook(true);
+  const handleDeleteBook = async (book) => {
+    if (!book) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Volume',
+      message: `Are you sure you want to permanently remove volume "${book.title}" from the catalog? This action cannot be undone.`,
+      confirmText: 'Delete Record',
+      cancelText: 'Cancel',
+      isDangerous: true,
+    });
+
+    if (!confirmed) return;
+
     try {
-      await api.deleteBook(bookToDelete._id);
-      setBooks((prev) => prev.filter((b) => b._id !== bookToDelete._id));
-      showToast(`Volume "${bookToDelete.title}" was removed from the catalog.`, 'success');
-      setBookToDelete(null);
+      await api.deleteBook(book._id);
+      setBooks((prev) => prev.filter((b) => b._id !== book._id));
+      showToast(`Volume "${book.title}" was removed from the catalog.`, 'success');
     } catch (err) {
       console.error('Error deleting volume:', err);
       showToast(err.message || 'Failed to delete volume', 'error');
-    } finally {
-      setDeletingBook(false);
     }
   };
 
@@ -151,7 +154,7 @@ export default function AuthorDetailPage() {
           {/* Avatar & Author Name (Figma #1:15 - #1:19) */}
           <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
             {/* Avatar Circle (Figma #1:16 - #1:17) */}
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#EFEEEC] flex items-center justify-center font-serif text-[18px] sm:text-[20px] font-bold text-primary shrink-0 shadow-sm">
+            <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-serif text-[18px] sm:text-[20px] font-bold shrink-0 shadow-sm ${getAvatarColor(author._id)}`}>
               {getInitials(author.name)}
             </div>
 
@@ -175,8 +178,8 @@ export default function AuthorDetailPage() {
             {/* Delete Author Button (Figma #1:26 - #1:30) */}
             <button
               type="button"
-              onClick={() => setShowDeleteAuthorModal(true)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FFDAD6]/60 hover:bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm leading-[20px] transition-colors shadow-sm font-sans"
+              onClick={handleDeleteAuthor}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#FFDAD6]/60 hover:bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm leading-[20px] transition-colors shadow-sm font-sans cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">delete</span>
               <span>Delete Author</span>
@@ -249,7 +252,7 @@ export default function AuthorDetailPage() {
                     name: author.name,
                   },
                 }}
-                onDelete={(b) => setBookToDelete(b)}
+                onDelete={handleDeleteBook}
               />
             ))}
           </div>
@@ -272,120 +275,6 @@ export default function AuthorDetailPage() {
         )}
       </section>
 
-      {/* Delete Author Modal */}
-      {showDeleteAuthorModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-xl border border-outline-variant/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 text-error mb-3">
-              <span className="material-symbols-outlined text-[28px]">warning</span>
-              <h3 className="font-serif text-xl font-medium text-primary">Delete Author</h3>
-            </div>
-
-            {books.length > 0 ? (
-              <div>
-                <p className="text-sm text-on-surface-variant leading-relaxed font-sans mb-3">
-                  Cannot delete <strong className="text-primary">{author.name}</strong> because they
-                  are currently referenced by{' '}
-                  <strong className="text-primary">
-                    {books.length} {books.length === 1 ? 'book' : 'books'}
-                  </strong>{' '}
-                  in the catalog.
-                </p>
-                <p className="text-xs text-on-surface-variant font-sans bg-[#F4F3F1] p-3 rounded-lg border border-outline-variant/30">
-                  Please delete or reassign all associated volumes before removing this author from the
-                  library database.
-                </p>
-                <div className="flex items-center justify-end mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowDeleteAuthorModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-primary bg-[#EFEEEC] hover:bg-[#E9E8E6] transition-colors font-sans"
-                  >
-                    Understood
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p className="text-sm text-on-surface-variant leading-relaxed font-sans">
-                  Are you sure you want to permanently delete author{' '}
-                  <strong className="text-primary">{author.name}</strong> from the library catalog?
-                  This action cannot be undone.
-                </p>
-
-                <div className="flex items-center justify-end gap-3 mt-6">
-                  <button
-                    type="button"
-                    disabled={deletingAuthor}
-                    onClick={() => setShowDeleteAuthorModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container transition-colors font-sans"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    disabled={deletingAuthor}
-                    onClick={handleDeleteAuthor}
-                    className="px-4 py-2 bg-error text-on-error rounded-xl text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm font-sans"
-                  >
-                    {deletingAuthor ? (
-                      <>
-                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Deleting...</span>
-                      </>
-                    ) : (
-                      <span>Delete Author</span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Delete Book Confirmation Modal */}
-      {bookToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-xl border border-outline-variant/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 text-error mb-3">
-              <span className="material-symbols-outlined text-[28px]">warning</span>
-              <h3 className="font-serif text-xl font-medium text-primary">Delete Volume</h3>
-            </div>
-            <p className="text-sm text-on-surface-variant leading-relaxed font-sans">
-              Are you sure you want to permanently remove volume{' '}
-              <strong className="text-primary">{bookToDelete.title}</strong> from the catalog? This
-              action cannot be undone.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 mt-6">
-              <button
-                type="button"
-                disabled={deletingBook}
-                onClick={() => setBookToDelete(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container transition-colors font-sans"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={deletingBook}
-                onClick={handleDeleteBook}
-                className="px-4 py-2 bg-error text-on-error rounded-xl text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm font-sans"
-              >
-                {deletingBook ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Deleting...</span>
-                  </>
-                ) : (
-                  <span>Delete Volume</span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

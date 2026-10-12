@@ -2,9 +2,10 @@
  * BookShelf REST API Client
  * Interacts with Node.js/Express backend on port 5000
  */
-const API_BASE_URL = (typeof window !== 'undefined' && window.location.port === '5000')
-  ? window.location.origin
-  : 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  ((typeof window !== 'undefined' && window.location.port === '5000')
+    ? window.location.origin
+    : 'http://localhost:5000');
 
 class ApiService {
   constructor(baseUrl = API_BASE_URL) {
@@ -56,12 +57,13 @@ class ApiService {
   }
 
   // --- BOOKS ---
-  async getBooks({ page = 1, limit = 8, genre = '', search = '' } = {}) {
+  async getBooks({ page = 1, limit = 8, genre = '', search = '', sort = '' } = {}) {
     const params = new URLSearchParams();
     if (page) params.append('page', page);
     if (limit) params.append('limit', limit);
     if (genre && genre !== 'All Genres') params.append('genre', genre);
     if (search && search.trim()) params.append('search', search.trim());
+    if (sort) params.append('sort', sort);
 
     const qs = params.toString();
     return this.request(`/books${qs ? `?${qs}` : ''}`);
@@ -92,10 +94,12 @@ class ApiService {
   }
 
   // --- AUTHORS ---
-  async getAuthors({ page = 1, limit = 10 } = {}) {
+  async getAuthors({ page = 1, limit = 10, search = '', sort = '' } = {}) {
     const params = new URLSearchParams();
     if (page) params.append('page', page);
     if (limit) params.append('limit', limit);
+    if (search && search.trim()) params.append('search', search.trim());
+    if (sort) params.append('sort', sort);
 
     const qs = params.toString();
     return this.request(`/authors${qs ? `?${qs}` : ''}`);

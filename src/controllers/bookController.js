@@ -28,8 +28,45 @@ export const getBooks = asyncHandler(async (req, res, next) => {
     query.title = { $regex: safeSearch, $options: 'i' };
   }
 
-  const total = await Book.countDocuments(query);
-  const books = await Book.find(query).skip(startIndex).limit(validLimit);
+  let sortOption = { createdAt: -1 };
+  if (req.query.sort) {
+    switch (req.query.sort) {
+      case 'title-asc':
+        sortOption = { title: 1 };
+        break;
+      case 'title-desc':
+        sortOption = { title: -1 };
+        break;
+      case 'price-asc':
+        sortOption = { price: 1 };
+        break;
+      case 'price-desc':
+        sortOption = { price: -1 };
+        break;
+      case 'year-desc':
+        sortOption = { publishedYear: -1 };
+        break;
+      case 'recent':
+      default:
+        sortOption = { createdAt: -1 };
+        break;
+    }
+  }
+
+  const [total, books, stats] = await Promise.all([
+    Book.countDocuments(query),
+    Book.find(query)
+      .populate('author')
+      .sort(sortOption)
+      .skip(startIndex)
+      .limit(validLimit),
+    Book.aggregate([
+      { $match: query },
+      { $group: { _id: null, totalValue: { $sum: '$price' } } }
+    ])
+  ]);
+
+  const totalCatalogValue = stats.length > 0 ? (stats[0].totalValue || 0) : 0;
 
   res.status(200).json({
     data: books,
@@ -38,7 +75,8 @@ export const getBooks = asyncHandler(async (req, res, next) => {
       limit: validLimit,
       total,
       totalPages: Math.ceil(total / validLimit)
-    }
+    },
+    totalCatalogValue
   });
 });
 

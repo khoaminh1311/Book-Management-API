@@ -2,33 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
-
-// Color palette for author avatar initials matching Figma #1:226, #1:251, #1:276, etc.
-const AVATAR_BG_COLORS = [
-  'bg-[#D5E3FC] text-[#091426]',
-  'bg-[#FFD9B0] text-[#745939]',
-  'bg-[#BCC7DE] text-[#091426]',
-  'bg-[#E4C099] text-[#745939]',
-  'bg-[#E9E8E6] text-[#091426]',
-  'bg-[#C5E8D8] text-[#1E523A]',
-];
-
-function getInitials(name = '') {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-function getAvatarColor(id = '') {
-  if (!id) return AVATAR_BG_COLORS[0];
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash << 5) - hash + id.charCodeAt(i);
-  }
-  const idx = Math.abs(hash) % AVATAR_BG_COLORS.length;
-  return AVATAR_BG_COLORS[idx];
-}
+import Pagination from '../components/common/Pagination';
+import { getInitials, getAvatarColor } from '../utils/helpers';
 
 const SORT_OPTIONS = [
   { value: 'recent', label: 'Last Updated' },
@@ -50,7 +25,7 @@ const SORT_OPTIONS = [
  *   - Table Footer / Pagination Controls (#1:474): Showing 1 to X of Y entries, Prev, Page numbers, Next
  */
 export default function AuthorsPage() {
-  const { showToast } = useToast();
+  const { showToast, confirmAction } = useToast();
 
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,15 +37,17 @@ export default function AuthorsPage() {
   const limit = 10;
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
 
-  const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deleting, setDeleting] = useState(false);
-
-  const fetchAuthors = useCallback(async (targetPage = page) => {
+  const fetchAuthors = useCallback(async (targetPage = page, searchQuery = search, sortOption = sortBy) => {
     setLoading(true);
     setError(null);
 
     try {
-      const res = await api.getAuthors({ page: targetPage, limit });
+      const res = await api.getAuthors({
+        page: targetPage,
+        limit,
+        search: searchQuery,
+        sort: sortOption,
+      });
       const fetched = res?.data || [];
       setAuthors(fetched);
       if (res?.pagination) {
@@ -85,48 +62,50 @@ export default function AuthorsPage() {
     }
   }, [page, limit, showToast]);
 
+  // Debounced Search and Sort effect
   useEffect(() => {
-    fetchAuthors(page);
-  }, [page, fetchAuthors]);
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchAuthors(1, search, sortBy);
+    }, 300);
 
-  const handleDeleteAuthor = async () => {
-    if (!deleteTarget) return;
-    setDeleting(true);
+    return () => clearTimeout(timer);
+  }, [search, sortBy]);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    fetchAuthors(newPage, search, sortBy);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteAuthor = async (author) => {
+    if (!author) return;
+    const confirmed = await confirmAction({
+      title: 'Delete Author',
+      message: `Are you sure you want to remove "${author.name}" from the catalog? This action cannot be undone.`,
+      confirmText: 'Delete Record',
+      cancelText: 'Cancel',
+      isDangerous: true,
+    });
+
+    if (!confirmed) return;
 
     try {
-      await api.deleteAuthor(deleteTarget._id);
-      showToast(`Author "${deleteTarget.name}" deleted successfully`, 'success');
-      setDeleteTarget(null);
-      fetchAuthors(page);
+      await api.deleteAuthor(author._id);
+      showToast(`Author "${author.name}" deleted successfully`, 'success');
+
+      // If last item on page > 1, retreat to previous page
+      const isLastItemOnPage = authors.length === 1 && page > 1;
+      const targetPage = isLastItemOnPage ? page - 1 : page;
+      if (isLastItemOnPage) {
+        setPage(targetPage);
+      }
+      fetchAuthors(targetPage, search, sortBy);
     } catch (err) {
       console.error('Error deleting author:', err);
       showToast(err.message || 'Failed to delete author', 'error');
-    } finally {
-      setDeleting(false);
     }
   };
-
-  // Filter and Sort in-memory
-  const filteredAuthors = authors.filter((a) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    const nameMatch = (a.name || '').toLowerCase().includes(q);
-    const bioMatch = (a.bio || '').toLowerCase().includes(q);
-    const natMatch = (a.nationality || '').toLowerCase().includes(q);
-    return nameMatch || bioMatch || natMatch;
-  });
-
-  const sortedAuthors = [...filteredAuthors].sort((a, b) => {
-    if (sortBy === 'name-asc') return (a.name || '').localeCompare(b.name || '');
-    if (sortBy === 'name-desc') return (b.name || '').localeCompare(a.name || '');
-    if (sortBy === 'year-asc') return (Number(a.birthYear) || 0) - (Number(b.birthYear) || 0);
-    if (sortBy === 'year-desc') return (Number(b.birthYear) || 0) - (Number(a.birthYear) || 0);
-    return 0; // 'recent'
-  });
-
-  const totalAuthorsCount = pagination.total || authors.length;
-  const startEntry = totalAuthorsCount === 0 ? 0 : (page - 1) * limit + 1;
-  const endEntry = Math.min(page * limit, totalAuthorsCount);
 
   return (
     <div className="p-4 sm:p-6 lg:p-10 max-w-7xl w-full mx-auto flex flex-col gap-5 sm:gap-6 md:gap-8">
@@ -212,7 +191,7 @@ export default function AuthorsPage() {
           <div className="flex items-center gap-2.5">
             <h2 className="font-sans font-semibold text-sm text-primary">All Catalog Authors</h2>
             <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#E9E8E6] text-[#45474C] font-sans tracking-[0.05em]">
-              Showing {sortedAuthors.length} authors
+              Showing {authors.length} authors
             </span>
           </div>
 
@@ -256,13 +235,13 @@ export default function AuthorsPage() {
             <p className="text-xs text-on-surface-variant max-w-sm font-sans">{error}</p>
             <button
               type="button"
-              onClick={() => fetchAuthors(page)}
+              onClick={() => fetchAuthors(page, search, sortBy)}
               className="mt-2 px-4 py-1.5 bg-primary text-white rounded-lg text-xs font-semibold font-sans"
             >
               Retry
             </button>
           </div>
-        ) : sortedAuthors.length === 0 ? (
+        ) : authors.length === 0 ? (
           <div className="py-16 text-center flex flex-col items-center justify-center gap-2 p-6">
             <span className="material-symbols-outlined text-[40px] text-outline-variant">person_off</span>
             <p className="text-sm font-medium text-primary font-sans">No authors found</p>
@@ -281,7 +260,7 @@ export default function AuthorsPage() {
           <>
             {/* Mobile Card List (< md) */}
             <div className="md:hidden divide-y divide-outline-variant/20">
-              {sortedAuthors.map((author) => {
+              {authors.map((author) => {
                 const avatarColor = getAvatarColor(author._id);
                 const initials = getInitials(author.name);
 
@@ -349,7 +328,7 @@ export default function AuthorsPage() {
                         </Link>
                         <button
                           type="button"
-                          onClick={() => setDeleteTarget(author)}
+                          onClick={() => handleDeleteAuthor(author)}
                           className="w-8 h-8 rounded-lg text-[#BA1A1A] hover:bg-error-container/60 hover:text-on-error-container transition-colors inline-flex items-center justify-center"
                           title="Delete author"
                           aria-label={`Delete ${author.name}`}
@@ -388,7 +367,7 @@ export default function AuthorsPage() {
 
                 {/* Table Body (Figma #1:223) */}
                 <tbody className="divide-y divide-outline-variant/20">
-                  {sortedAuthors.map((author) => {
+                  {authors.map((author) => {
                     const avatarColor = getAvatarColor(author._id);
                     const initials = getInitials(author.name);
 
@@ -476,7 +455,7 @@ export default function AuthorsPage() {
                             {/* Delete author (#1:246) */}
                             <button
                               type="button"
-                              onClick={() => setDeleteTarget(author)}
+                              onClick={() => handleDeleteAuthor(author)}
                               className="w-8 h-8 rounded-lg text-[#BA1A1A] hover:bg-error-container/60 hover:text-on-error-container transition-colors inline-flex items-center justify-center"
                               title="Delete author"
                               aria-label={`Delete ${author.name}`}
@@ -496,88 +475,18 @@ export default function AuthorsPage() {
           </>
         )}
 
-        {/* Table Footer / Pagination Controls (Figma #1:474 - template EL-10ebdc0c: padding 16px 24px) */}
+        </section>
+
+        {/* SECTION 4: PAGINATION FOOTER */}
         {!loading && !error && (
-          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-outline-variant/30 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 bg-surface-container-lowest">
-            {/* Entries counter (#1:476: style_adc113b5: Plus Jakarta Sans Regular 12px) */}
-            <div className="text-[11px] sm:text-[12px] leading-[18px] text-[#45474C] font-sans text-center sm:text-left">
-              Showing <span className="font-semibold text-primary">{startEntry}</span> to{' '}
-              <span className="font-semibold text-primary">{endEntry}</span> of{' '}
-              <span className="font-semibold text-primary">{totalAuthorsCount.toLocaleString()}</span> entries
-            </div>
-
-            {/* Pagination Navigation (#1:477) */}
-            <nav aria-label="Pagination Navigation" className="flex items-center gap-1.5">
-              <button
-                type="button"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#45474C] hover:bg-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                aria-label="Previous page"
-              >
-                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-              </button>
-
-              <span className="text-xs font-semibold px-2 text-primary font-sans">
-                Page {page} / {pagination.totalPages || 1}
-              </span>
-
-              <button
-                type="button"
-                disabled={page >= pagination.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#45474C] hover:bg-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                aria-label="Next page"
-              >
-                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-              </button>
-            </nav>
-          </div>
+          <Pagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={pagination.limit}
+            onPageChange={handlePageChange}
+          />
         )}
-      </section>
-
-      {/* Delete Confirmation Modal */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-xl border border-outline-variant/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 text-error mb-3">
-              <span className="material-symbols-outlined text-[28px]">warning</span>
-              <h3 className="font-serif text-xl font-medium text-primary">Delete Author</h3>
-            </div>
-            <p className="text-sm text-on-surface-variant leading-relaxed font-sans">
-              Are you sure you want to remove{' '}
-              <strong className="text-primary">{deleteTarget.name}</strong> from the catalog? This action
-              cannot be undone.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 mt-6">
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container transition-colors font-sans"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={handleDeleteAuthor}
-                className="px-4 py-2 bg-error text-on-error rounded-xl text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm font-sans"
-              >
-                {deleting ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Deleting...</span>
-                  </>
-                ) : (
-                  <span>Delete Author</span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
   );
 }

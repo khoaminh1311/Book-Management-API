@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-const DEFAULT_COVER = '/assets/book_cover_architecture.png';
+import BookCover from './BookCover';
+import { formatPrice, normalizeAuthor } from '../../utils/helpers';
 
 /**
  * BookCard Component
@@ -15,10 +15,8 @@ const DEFAULT_COVER = '/assets/book_cover_architecture.png';
  * - Price: Plus Jakarta Sans SemiBold 600, 16px, leading 24px, tracking -0.005em, text-primary (style_75ddd075)
  */
 export default function BookCard({ book, onDelete, variant = 'default' }) {
-  const authorName = book.author?.name || (typeof book.author === 'string' ? 'Referenced Author' : 'Unknown Author');
-  const authorId = book.author?._id || (typeof book.author === 'string' ? book.author : '');
-  const coverUrl = book.coverImage || DEFAULT_COVER;
-  const priceFormatted = book.price !== undefined && book.price !== null ? `$${Number(book.price).toFixed(2)}` : 'Free';
+  const { authorName, authorId } = normalizeAuthor(book.author);
+  const priceFormatted = formatPrice(book.price);
   const genre = book.genre || 'General';
   const year = book.publishedYear || '—';
   const isAuthorCatalog = variant === 'author';
@@ -27,17 +25,14 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
     <div className={`group relative bg-surface-container-lowest ${isAuthorCatalog ? 'rounded-xl' : 'rounded-xl sm:rounded-2xl'} p-3 sm:p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between border border-outline-variant/40`}>
       {/* Book Cover Artwork (2:3 Ratio) - Figma #1:60 / EL-af3a1dd2 */}
       <div className={`relative w-full aspect-[2/3] ${isAuthorCatalog ? 'rounded-lg' : 'rounded-lg sm:rounded-xl'} overflow-hidden bg-surface-container mb-2.5 sm:mb-3.5`}>
-        <Link to={`/books/${book._id}`} className="block w-full h-full overflow-hidden group/cover">
-          <img
-            src={coverUrl}
-            alt={book.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover/cover:scale-105"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = DEFAULT_COVER;
-            }}
+        <div className="w-full h-full overflow-hidden select-none">
+          <BookCover
+            book={book}
+            size="md"
+            className="transition-transform duration-300 group-hover:scale-105"
+            imgClassName="transition-transform duration-300 group-hover:scale-105"
           />
-        </Link>
+        </div>
 
         {/* Top-Right Badge: Published Year on Author Detail (Figma #1:62 - #1:64), Genre on Dashboard (Figma #1:616) */}
         <div className="absolute top-2 sm:top-2.5 right-2 sm:right-2.5 z-10 pointer-events-none">
@@ -54,11 +49,11 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
 
         {/* Glassmorphism Floating Action Overlay (Desktop Hover, NOT on Author Detail) */}
         {!isAuthorCatalog && (
-          <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center p-3">
+          <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center p-3 cursor-default">
             <div className="flex items-center gap-1.5 p-1.5 bg-white/95 backdrop-blur-md rounded-full shadow-lg">
               <Link
                 to={`/books/${book._id}`}
-                className="p-2 rounded-full text-[#45474C] hover:text-primary hover:bg-surface-container transition-colors"
+                className="p-2 rounded-full text-[#45474C] hover:text-primary hover:bg-surface-container transition-colors cursor-pointer"
                 title="View details"
                 aria-label="View details"
               >
@@ -66,7 +61,7 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
               </Link>
               <Link
                 to={`/edit-book/${book._id}`}
-                className="p-2 rounded-full text-[#45474C] hover:text-primary hover:bg-surface-container transition-colors"
+                className="p-2 rounded-full text-[#45474C] hover:text-primary hover:bg-surface-container transition-colors cursor-pointer"
                 title="Edit volume"
                 aria-label="Edit volume"
               >
@@ -75,7 +70,7 @@ export default function BookCard({ book, onDelete, variant = 'default' }) {
               <button
                 type="button"
                 onClick={() => onDelete(book)}
-                className="p-2 rounded-full text-error hover:bg-error-container hover:text-on-error-container transition-colors"
+                className="p-2 rounded-full text-error hover:bg-error-container hover:text-on-error-container transition-colors cursor-pointer"
                 title="Delete volume"
                 aria-label="Delete volume"
               >

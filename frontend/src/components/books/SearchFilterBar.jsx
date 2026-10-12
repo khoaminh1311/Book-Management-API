@@ -1,4 +1,5 @@
 import React from 'react';
+import { GENRE_FILTER_OPTIONS } from '../../utils/constants';
 
 /**
  * SearchFilterBar Component
@@ -18,17 +19,7 @@ export default function SearchFilterBar({
   sortBy = 'recent',
   onSortChange,
 }) {
-  const genres = [
-    'All Genres',
-    'Art & Design',
-    'Architecture',
-    'Philosophy',
-    'Essay',
-    'Historical Fiction',
-    'Fantasy',
-    'Epic Fantasy',
-    'General',
-  ];
+  const genres = GENRE_FILTER_OPTIONS;
 
   const sortOptions = [
     { value: 'recent', label: 'Sort by: Recently Added' },

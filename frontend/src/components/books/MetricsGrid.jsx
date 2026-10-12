@@ -1,4 +1,5 @@
 import React from 'react';
+import { GENRE_OPTIONS } from '../../utils/constants';
 
 /**
  * Quick Metrics Summary Cards
@@ -8,7 +9,7 @@ import React from 'react';
  * - Icon: Bronze #745939 (fill_afdf7c66), 18px
  * - Spacing: pt-3 (12px) margin between label and value (EL-8e175aae)
  */
-export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, totalValue }) {
+export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, totalValue, valueLabel = 'TOTAL CATALOG VALUE' }) {
   const metrics = [
     {
       label: 'TOTAL TITLES',
@@ -22,11 +23,11 @@ export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, to
     },
     {
       label: 'TOTAL GENRES',
-      value: totalGenres ?? 6,
+      value: totalGenres ?? GENRE_OPTIONS.length,
       icon: 'category',
     },
     {
-      label: 'TOTAL CATALOG VALUE',
+      label: valueLabel,
       value: `$${Number(totalValue || 0).toFixed(2)}`,
       icon: 'payments',
     },
@@ -34,9 +35,9 @@ export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, to
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-      {metrics.map((m, idx) => (
+      {metrics.map((m) => (
         <div
-          key={idx}
+          key={m.label}
           className="bg-surface-container-lowest p-3.5 sm:p-5 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col justify-between"
         >
           {/* Header Row: Label & Bronze Icon */}
@@ -44,7 +45,7 @@ export default function MetricsGrid({ totalTitles, totalAuthors, totalGenres, to
             <span className="text-[10px] sm:text-[11px] font-semibold leading-[13px] sm:leading-[14px] tracking-[0.05em] uppercase truncate">
               {m.label}
             </span>
-            {m.label === 'TOTAL CATALOG VALUE' ? (
+            {m.label.includes('VALUE') ? (
               <span className="material-symbols-outlined text-secondary text-[20px]">
                 attach_money
               </span>

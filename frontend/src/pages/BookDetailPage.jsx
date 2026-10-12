@@ -2,15 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
-
-const DEFAULT_COVER = '/assets/book_cover_architecture.png';
-
-function getInitials(name = '') {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
+import BookCover from '../components/books/BookCover';
+import { sanitizeHtml } from '../utils/sanitize';
+import { getInitials, formatPrice, normalizeAuthor, getAvatarColor } from '../utils/helpers';
 
 /**
  * Screen 3: BookDetailPage (Volume Overview & Technical Specs)
@@ -26,14 +20,11 @@ function getInitials(name = '') {
 export default function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showToast, confirmAction } = useToast();
 
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function fetchBookDetail() {
@@ -62,7 +53,16 @@ export default function BookDetailPage() {
 
   const handleDeleteBook = async () => {
     if (!book) return;
-    setDeleting(true);
+    const confirmed = await confirmAction({
+      title: 'Delete Volume',
+      message: `Are you sure you want to permanently delete "${book.title}" from the catalog? This action cannot be undone.`,
+      confirmText: 'Delete Volume',
+      cancelText: 'Cancel',
+      isDangerous: true,
+    });
+
+    if (!confirmed) return;
+
     try {
       await api.deleteBook(book._id);
       showToast(`Volume "${book.title}" was deleted from catalog`, 'success');
@@ -70,8 +70,6 @@ export default function BookDetailPage() {
     } catch (err) {
       console.error('Error deleting book:', err);
       showToast(err.message || 'Failed to delete volume', 'error');
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -103,11 +101,9 @@ export default function BookDetailPage() {
     );
   }
 
+  const { authorName, authorId } = normalizeAuthor(book.author);
   const author = book.author && typeof book.author === 'object' ? book.author : null;
-  const authorName = author?.name || (typeof book.author === 'string' ? 'Referenced Author' : 'Unknown Author');
-  const authorId = author?._id || (typeof book.author === 'string' ? book.author : '');
-  const coverUrl = book.coverImage || DEFAULT_COVER;
-  const priceFormatted = book.price !== undefined && book.price !== null ? `$${Number(book.price).toFixed(2)}` : 'Free';
+  const priceFormatted = formatPrice(book.price);
   const archivalNo = book._id ? `ARCHIVAL NO. ${book._id.slice(-4).toUpperCase()}` : 'ARCHIVAL NO. 492';
 
   return (
@@ -136,21 +132,10 @@ export default function BookDetailPage() {
 
             {/* Book Cover Container (Figma #1:814: borderRadius 8px) */}
             <div className="relative w-full h-full rounded-lg overflow-hidden shadow-2xl bg-[#EFEEEC] border border-black/5">
-              <img
-                src={coverUrl}
-                alt={book.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = DEFAULT_COVER;
-                }}
-              />
-
-              {/* Subtle spine ridge overlay (Figma #1:817) */}
-              <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-primary/25 via-primary/5 to-transparent pointer-events-none" />
+              <BookCover book={book} size="lg" />
 
               {/* Archival Seal Tag Floating on Cover (Figma #1:818 - #1:819) */}
-              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-[#091426]/85 backdrop-blur px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-white text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase shadow-md font-sans">
+              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-[#091426]/85 backdrop-blur px-2 sm:px-2.5 py-0.5 sm:py-1 rounded text-white text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase shadow-md font-sans z-10">
                 {archivalNo}
               </div>
             </div>
@@ -170,8 +155,8 @@ export default function BookDetailPage() {
             {/* Delete Book Button (Figma #1:827) */}
             <button
               type="button"
-              onClick={() => setShowDeleteModal(true)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm shadow-sm hover:bg-[#FFDAD6]/80 transition-colors font-sans"
+              onClick={handleDeleteBook}
+              className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg bg-[#FFDAD6] text-[#BA1A1A] font-semibold text-xs sm:text-sm shadow-sm hover:bg-[#FFDAD6]/80 transition-colors font-sans cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">delete</span>
               <span className="leading-tight text-center">Delete Book</span>
@@ -236,7 +221,7 @@ export default function BookDetailPage() {
             <div
               className="text-xs sm:text-sm md:text-[15px] leading-[22px] sm:leading-[26px] text-[#1A1C1B] font-sans prose prose-sm max-w-none break-words [&_blockquote]:border-l-2 [&_blockquote]:border-[#745939] [&_blockquote]:pl-3 [&_blockquote]:my-2 [&_blockquote]:italic [&_blockquote]:text-[#45474C] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-1.5 [&_a]:text-[#745939] [&_a]:underline [&_strike]:line-through [&_s]:line-through [&_b]:font-bold [&_strong]:font-bold [&_i]:italic [&_em]:italic"
               dangerouslySetInnerHTML={{
-                __html: book.description || '<span class="italic text-[#75777D]">No detailed curatorial description has been recorded for this volume yet.</span>'
+                __html: sanitizeHtml(book.description) || '<span class="italic text-[#75777D]">No detailed curatorial description has been recorded for this volume yet.</span>'
               }}
             />
           </div>
@@ -245,7 +230,7 @@ export default function BookDetailPage() {
           {author && (
             <div className="bg-surface-container-lowest p-4 sm:p-6 rounded-xl border border-outline-variant/40 shadow-sm flex flex-col sm:flex-row sm:items-start lg:items-center gap-4 sm:gap-5">
               {/* Author Avatar circle (Figma #1:869 - #1:870: 48x48px, fill #E9E8E6, border #C5C6CD) */}
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#E9E8E6] flex items-center justify-center font-serif text-[15px] sm:text-[16px] leading-[24px] tracking-[0.05em] font-medium text-primary shrink-0 border border-[#C5C6CD] shadow-sm">
+              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-serif text-[15px] sm:text-[16px] leading-[24px] tracking-[0.05em] font-medium shrink-0 border border-[#C5C6CD] shadow-sm ${getAvatarColor(authorId)}`}>
                 {getInitials(author.name)}
               </div>
 
@@ -291,48 +276,6 @@ export default function BookDetailPage() {
         </section>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-xl border border-outline-variant/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 text-error mb-3">
-              <span className="material-symbols-outlined text-[28px]">warning</span>
-              <h3 className="font-serif text-xl font-medium text-primary">Delete Volume</h3>
-            </div>
-            <p className="text-sm text-on-surface-variant leading-relaxed font-sans">
-              Are you sure you want to permanently delete{' '}
-              <strong className="text-primary">{book.title}</strong> from the catalog? This action
-              cannot be undone.
-            </p>
-
-            <div className="flex items-center justify-end gap-3 mt-6">
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container transition-colors font-sans"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={handleDeleteBook}
-                className="px-4 py-2 bg-error text-on-error rounded-xl text-xs font-semibold hover:bg-error/90 transition-colors flex items-center gap-1.5 shadow-sm font-sans"
-              >
-                {deleting ? (
-                  <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Deleting...</span>
-                  </>
-                ) : (
-                  <span>Delete Volume</span>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
