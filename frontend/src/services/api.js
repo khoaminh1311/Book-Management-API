@@ -124,6 +124,16 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // --- UPLOAD ---
+  async uploadCover(file) {
+    const formData = new FormData();
+    formData.append('cover', file);
+    return this.request('/upload', {
+      method: 'POST',
+      body: formData,
+    });
+  }
 }
 
 export const api = new ApiService();
