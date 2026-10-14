@@ -6,7 +6,7 @@ Developed with a focus on strict validation, error handling, robust querying cap
 ## Live Deployment Links
 
 🚀 **Production API (Render):** `https://book-management-api-cuds.onrender.com`  
-🌐 **Production Web Client (Vercel):** Deployed via Vercel (Root Directory: `frontend`)
+🌐 **Production Web Client (Vercel):** `https://book-management-api-blond.vercel.app/`
 
 ## Features
 
@@ -40,7 +40,7 @@ Developed with a focus on strict validation, error handling, robust querying cap
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (v20 or higher recommended)
+- [Node.js](https://nodejs.org/) (v22 or higher recommended)
 - [MongoDB](https://www.mongodb.com/) (Local installation or MongoDB Atlas URI)
 - [Cloudinary](https://cloudinary.com/) account (for book cover uploads)
 
