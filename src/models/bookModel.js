@@ -11,7 +11,7 @@ const bookSchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true,
-    maxlength: [1000, 'Description cannot exceed 1000 characters']
+    maxlength: [5000, 'Description content (including formatting tags) cannot exceed 5000 characters']
   },
   genre: {
     type: String,
