@@ -1,139 +1,131 @@
-# Book Management API & BookShelf Client
+# Book Management RESTful API
 
-A robust RESTful API built with Node.js, Express, and MongoDB for managing Books and Authors, paired with a modern **BookShelf** web interface designed in Figma and built with React 19, Vite, and TailwindCSS.
-Developed with a focus on strict validation, error handling, robust querying capabilities, and seamless user experience.
+A robust RESTful API built with **Node.js**, **Express**, and **MongoDB** for managing Books and Authors collections. Developed with a focus on strict validation, structured error handling, advanced querying capabilities, and secure media storage via Cloudinary.
 
-## Live Deployment Links
+---
 
-🚀 **Production API (Render):** `https://book-management-api-cuds.onrender.com`  
-🌐 **Production Web Client (Vercel):** `https://book-management-api-blond.vercel.app/`
+## 🌐 Live Deployment & Repositories
 
-## Features
+- 🚀 **Production API Server (Render):** `https://book-management-api-cuds.onrender.com`  
+- 🌐 **Production Web Client (Vercel):** `https://book-management-frontend-taupe.vercel.app/`  
+- 📦 **Frontend Client Repository:** [Book-Management-Frontend](https://github.com/khoaminh1311/Book-Management-Frontend)
+
+---
+
+## ✨ Features
 
 - **Authors Management**: Full CRUD operations for authors with biography, nationality, and birth year.
 - **Books Management**: Full CRUD operations for books with foreign-key references to authors.
 - **Advanced Querying & Search**: Search books by title and authors by name (case-insensitive regex) and filter books by genre.
 - **Server-Side Sorting**: Dynamic multi-criteria sorting for books (`title`, `price`, `year`, `recent`) and authors (`name`, `year`, `recent`).
-- **Cover Artwork Upload**: Multipart/form-data image upload integrated with Cloudinary CDN storage.
+- **Cover Artwork Upload**: Multipart/form-data image upload integrated with Cloudinary CDN storage via Multer memory storage.
 - **Catalog Metrics Aggregation**: Real-time aggregation of total catalog monetary value and volumes count via MongoDB pipelines.
-- **Pagination**: Efficient server-side pagination for both books and authors collections.
-- **Data Integrity & Security**: Strict validation against invalid types, stored XSS sanitization (DOMPurify), and protocol validation.
+- **Pagination**: Efficient server-side pagination for both books and authors collections (`page`, `limit`).
+- **Data Integrity & Security**: Strict Mongoose schema validation, stored XSS prevention, and non-negative price constraints.
 - **Relationship Protection**: Prevents deletion of authors that are still referenced by existing books.
-- **Centralized Error Handling**: Unified and descriptive error responses with custom `AppError` and React `ErrorBoundary`.
-- **Editorial Web Interface**: 6 cohesive screens matching Figma design system (Dashboard, Book Detail, Add/Edit Book with live 3D preview, Authors List, Author Detail, Add/Edit Author).
+- **Centralized Error Handling**: Unified and descriptive error responses with custom `AppError` and async wrapper.
 
-## Technology Stack
+---
 
-### Backend
-- **Runtime**: Node.js (ES Modules)
+## 🛠️ Technology Stack
+
+- **Runtime**: Node.js (ES Modules, v22+)
 - **Framework**: Express.js
-- **Database**: MongoDB (Atlas)
+- **Database**: MongoDB (Atlas Cloud)
 - **ODM**: Mongoose
 - **File Upload & Cloud Storage**: Multer & Cloudinary SDK
-- **Security & Utilities**: CORS, Express Rate Limit
+- **Security & Utilities**: CORS, Express Rate Limit, Dotenv
 
-### Frontend (`frontend/`)
-- **Core**: React 19, Vite
-- **Routing**: React Router 7
-- **Styling**: TailwindCSS (Custom Editorial Color Palette & Typography)
-- **Security**: DOMPurify
+---
 
-## Prerequisites
+## 📋 Prerequisites
 
 - [Node.js](https://nodejs.org/) (v22 or higher recommended)
-- [MongoDB](https://www.mongodb.com/) (Local installation or MongoDB Atlas URI)
-- [Cloudinary](https://cloudinary.com/) account (for book cover uploads)
+- [MongoDB](https://www.mongodb.com/) (Local instance or MongoDB Atlas Connection URI)
+- [Cloudinary](https://cloudinary.com/) Account (for cover image storage)
 
-## Installation & Setup
+---
+
+## 🚀 Installation & Local Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/khoaminh1311/Book-Management-API
+   git clone https://github.com/khoaminh1311/Book-Management-API.git
    cd Book-Management-API
    ```
 
-2. **Backend Setup**
+2. **Install dependencies**
    ```bash
-   # Install backend dependencies
    npm install
+   ```
 
-   # Configure Environment Variables (root directory .env)
-   # Refer to .env.example
+3. **Configure Environment Variables**
+   Create a `.env` file in the root directory (refer to `.env.example`):
+   ```env
    PORT=5000
    MONGODB_URI=your_mongodb_connection_string
    CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
    CLOUDINARY_API_KEY=your_cloudinary_api_key
    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-
-   # Start backend development server (runs on port 5000)
-   npm run dev
    ```
 
-3. **Frontend Setup**
+4. **Start Development Server**
    ```bash
-   # Navigate to frontend folder and install dependencies
-   cd frontend
-   npm install
-
-   # Start frontend development server (runs on port 5173)
+   # Development mode with nodemon auto-restart
    npm run dev
-   ```
 
-## API Reference
+   # Production mode
+   npm start
+   ```
+   Server will listen on `http://localhost:5000`.
+
+---
+
+## 📖 API Reference
 
 ### General
-- `GET /` - Root endpoint, returns a welcome message and basic documentation link.
+- `GET /` - Root endpoint, returns welcome message and documentation guide.
 
-### Authors
+### Authors (`/authors`)
 - `GET /authors` - Get all authors (Supports pagination, search & sort: `?page=1&limit=10&search=Arthur&sort=name-asc`)
-- `GET /authors/:id` - Get a specific author and their books
+- `GET /authors/:id` - Get a specific author and their associated books
 - `POST /authors` - Create a new author
-- `PUT /authors/:id` - Update an author
-- `DELETE /authors/:id` - Delete an author (Fails if books reference this author)
+- `PUT /authors/:id` - Update author profile
+- `DELETE /authors/:id` - Delete an author (Blocked if author has registered books)
 
-### Books
-- `GET /books` - Get all books (Supports pagination, query & sort: `?page=1&limit=8&search=harry&genre=Fantasy&sort=price-asc`)
-- `GET /books/:id` - Get a specific book (Populates author details)
+### Books (`/books`)
+- `GET /books` - Get all books (Supports pagination, search, genre filter & sort: `?page=1&limit=8&search=harry&genre=Fantasy&sort=price-asc`)
+- `GET /books/:id` - Get a specific book with populated author details
 - `POST /books` - Create a new book
-- `PUT /books/:id` - Update a book
-- `DELETE /books/:id` - Delete a book
+- `PUT /books/:id` - Update book details
+- `DELETE /books/:id` - Delete a book from catalog
 
-### Uploads
-- `POST /upload` - Upload a book cover image file (`multipart/form-data`, field: `cover`, max: 5MB). Returns Cloudinary secure asset URL.
+### Uploads (`/upload`)
+- `POST /upload` - Upload a book cover image (`multipart/form-data`, field: `cover`, max: 5MB). Returns Cloudinary secure asset URL.
 
-## Testing
-A Postman collection (`Book-Management-API.postman_collection.json`) is included in the root directory for automated and systematic API testing. Import it into Postman to test all routes.
+---
 
-## Deployment
+## 🧪 Testing
 
-### 1. Deploy Backend to Render
+A Postman collection (`Book-Management-API.postman_collection.json`) is included in the root directory for automated and systematic API testing. Import it into Postman to test all routes and validation edge cases.
 
-This project is configured for seamless deployment to **Render**.
+---
 
-1. Create a GitHub repository and push your code to it.
-2. Sign up/Log in to [Render](https://render.com).
-3. Click on **New +** and select **Web Service**.
-4. Select **Build and deploy from a Git repository** and connect your GitHub account.
-5. Select this repository.
-6. Render will automatically read the `render.yaml` file and configure most settings (Build/Start commands, Node version).
-7. Scroll down to **Environment Variables**, click **Add Environment Variable**:
+## ☁️ Deployment (Render)
+
+This API is configured for continuous deployment on **Render**:
+
+1. Sign up / Log in to [Render](https://render.com).
+2. Click **New +** $\rightarrow$ **Web Service**.
+3. Connect your GitHub account and select this repository (`Book-Management-API`).
+4. Settings:
+   - **Environment:** Node
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+5. In **Environment Variables**, add:
+   - `PORT`: `5000`
    - `MONGODB_URI`: `your_mongodb_atlas_connection_string`
    - `CLOUDINARY_CLOUD_NAME`: `your_cloudinary_cloud_name`
    - `CLOUDINARY_API_KEY`: `your_cloudinary_api_key`
    - `CLOUDINARY_API_SECRET`: `your_cloudinary_api_secret`
-8. Click **Create Web Service** to deploy. Once successful, the API is live!
-
-### 2. Deploy Frontend to Vercel
-
-The frontend is optimized for deployment on **Vercel**:
-
-1. Log in to [Vercel](https://vercel.com) and click **Add New...** $\rightarrow$ **Project**.
-2. Select your repository `Book-Management-API`.
-3. In **Configure Project**:
-   - **Root Directory:** Click **Edit** and select `frontend`.
-   - **Framework Preset:** Vite (detected automatically).
-   - **Build and Output Settings:** Leave default (`npm run build`, `dist`).
-4. In **Environment Variables**, add:
-   - **Key:** `VITE_API_URL`
-   - **Value:** Your Render backend URL (e.g. `https://book-management-api-cuds.onrender.com` without trailing slash).
-5. Click **Deploy**. SPA client-side routing is handled via `frontend/vercel.json`.
+6. Click **Create Web Service**. Once deployed, your API is live!
