@@ -23,9 +23,10 @@ const bookSchema = new mongoose.Schema({
   },
   publishedYear: {
     type: Number,
+    required: [true, 'Published year is required'],
     validate: {
       validator: isValidPastYear,
-      message: 'Published year must be a positive integer and cannot be in the future'
+      message: 'Published year must be an integer between 1000 and the current year'
     }
   },
   coverImage: {
