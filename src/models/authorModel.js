@@ -21,7 +21,7 @@ const authorSchema = new mongoose.Schema({
     type: Number,
     validate: {
       validator: isValidPastYear,
-      message: 'Birth year must be a positive integer and cannot be in the future'
+      message: 'Birth year must be an integer between 1000 and the current year'
     }
   }
 }, {
